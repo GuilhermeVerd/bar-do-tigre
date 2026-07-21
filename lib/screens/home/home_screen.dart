@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../administrador/administrador_screen.dart';
 import '../consumo/consumo_screen.dart';
+import '../consumo/meu_consumo_screen.dart';
+import '../produtos/produtos_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
     super.key,
+    required this.usuarioId,
     required this.nomeUsuario,
   });
 
+  final int usuarioId;
   final String nomeUsuario;
 
   @override
@@ -32,7 +37,7 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
+            constraints: const BoxConstraints(maxWidth: 900),
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -56,57 +61,71 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 28),
                   Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 1.5,
-                      children: [
-                        MenuCard(
-                          titulo: 'Registrar consumo',
-                          icone: Icons.shopping_cart,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ConsumoScreen(
-                                  nomeUsuario: nomeUsuario,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        MenuCard(
-                          titulo: 'Meu consumo',
-                          icone: Icons.receipt_long,
-                          onTap: () {
-                            mostrarMensagem(
-                              context,
-                              'Meu consumo',
-                            );
-                          },
-                        ),
-                        MenuCard(
-                          titulo: 'Produtos',
-                          icone: Icons.inventory_2,
-                          onTap: () {
-                            mostrarMensagem(
-                              context,
-                              'Produtos',
-                            );
-                          },
-                        ),
-                        MenuCard(
-                          titulo: 'Administrador',
-                          icone: Icons.admin_panel_settings,
-                          onTap: () {
-                            mostrarMensagem(
-                              context,
-                              'Administrador',
-                            );
-                          },
-                        ),
-                      ],
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final quantidadeColunas =
+                            constraints.maxWidth < 600 ? 1 : 2;
+
+                        return GridView.count(
+                          crossAxisCount: quantidadeColunas,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio:
+                              quantidadeColunas == 1 ? 2.4 : 1.5,
+                          children: [
+                            MenuCard(
+                              titulo: 'Registrar consumo',
+                              icone: Icons.shopping_cart,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ConsumoScreen(
+                                      usuarioId: usuarioId,
+                                      nomeUsuario: nomeUsuario,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            MenuCard(
+                              titulo: 'Meu consumo',
+                              icone: Icons.receipt_long,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MeuConsumoScreen(
+                                      usuarioId: usuarioId,
+                                      nomeUsuario: nomeUsuario,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            MenuCard(
+                              titulo: 'Produtos',
+                              icone: Icons.inventory_2,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ProdutosScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            MenuCard(
+                              titulo: 'Administrador',
+                              icone: Icons.admin_panel_settings,
+                              onTap: () {
+                                abrirAcessoAdministrador(context);
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -118,17 +137,82 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void mostrarMensagem(
+  Future<void> abrirAcessoAdministrador(
     BuildContext context,
-    String nomeTela,
-  ) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '$nomeTela será desenvolvido em breve.',
-        ),
-      ),
+  ) async {
+    String pinDigitado = '';
+
+    final autorizado = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Acesso administrativo'),
+          content: SizedBox(
+            width: 360,
+            child: TextField(
+              autofocus: true,
+              obscureText: true,
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+              decoration: const InputDecoration(
+                labelText: 'Digite o PIN',
+                prefixIcon: Icon(Icons.lock),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (valor) {
+                pinDigitado = valor;
+              },
+              onSubmitted: (valor) {
+                Navigator.pop(
+                  dialogContext,
+                  valor == '1234',
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('CANCELAR'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                  pinDigitado == '1234',
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFC107),
+                foregroundColor: Colors.black,
+              ),
+              child: const Text('ENTRAR'),
+            ),
+          ],
+        );
+      },
     );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    if (autorizado == true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AdministradorScreen(),
+        ),
+      );
+    } else if (autorizado == false) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PIN administrativo incorreto.'),
+        ),
+      );
+    }
   }
 }
 
