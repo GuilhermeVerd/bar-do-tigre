@@ -98,6 +98,13 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: const Text('Usuários'),
         backgroundColor: const Color(0xFF0B1F3A),
         foregroundColor: Colors.white,

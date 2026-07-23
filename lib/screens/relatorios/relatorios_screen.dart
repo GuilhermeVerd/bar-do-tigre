@@ -4,9 +4,12 @@ import '../../core/database/app_database.dart';
 import '../../repositories/retirada_repository.dart';
 import '../../services/pdf_service.dart';
 import '../consumo/meu_consumo_screen.dart';
+import 'historico_meses_screen.dart';
 
 class RelatoriosScreen extends StatefulWidget {
-  const RelatoriosScreen({super.key});
+  const RelatoriosScreen({super.key, this.mesInicial});
+
+  final DateTime? mesInicial;
 
   @override
   State<RelatoriosScreen> createState() => _RelatoriosScreenState();
@@ -20,7 +23,8 @@ class _RelatoriosScreenState extends State<RelatoriosScreen> {
   @override
   void initState() {
     super.initState();
-    mesSelecionado = DateTime.now();
+
+    mesSelecionado = widget.mesInicial ?? DateTime.now();
   }
 
   String get mesReferencia {
@@ -221,6 +225,18 @@ class _RelatoriosScreenState extends State<RelatoriosScreen> {
         title: const Text('Relatórios'),
         backgroundColor: const Color(0xFF0B1F3A),
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            tooltip: 'Histórico de meses',
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HistoricoMesesScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(

@@ -31,18 +31,36 @@ class RetiradaRepository {
   Stream<List<ResumoUsuarioRelatorio>> observarRelatorioMensal({
     required String mesReferencia,
   }) {
-    return _database.observarRelatorioMensal(mesReferencia: mesReferencia);
+    return _database.observarRelatorioMensal(
+      mesReferencia: mesReferencia,
+    );
   }
 
-  Stream<bool> observarMesFechado({required String mesReferencia}) {
-    return _database.observarMesFechado(mesReferencia: mesReferencia);
+  Stream<List<ResumoMesFechado>> observarHistoricoMesesFechados() {
+    return _database.observarHistoricoMesesFechados();
   }
 
-  Future<bool> verificarMesFechado({required String mesReferencia}) {
-    return _database.verificarMesFechado(mesReferencia: mesReferencia);
+  Stream<bool> observarMesFechado({
+    required String mesReferencia,
+  }) {
+    return _database.observarMesFechado(
+      mesReferencia: mesReferencia,
+    );
   }
 
-  Future<void> fecharMes({required String mesReferencia}) {
-    return _database.fecharMes(mesReferencia: mesReferencia);
+  Future<bool> verificarMesFechado({
+    required String mesReferencia,
+  }) {
+    return _database.verificarMesFechado(
+      mesReferencia: mesReferencia,
+    );
+  }
+
+  Future<void> fecharMes({
+    required String mesReferencia,
+  }) {
+    return _database.fecharMes(
+      mesReferencia: mesReferencia,
+    );
   }
 }

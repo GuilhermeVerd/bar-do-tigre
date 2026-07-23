@@ -52,6 +52,12 @@ class _AdministradorScreenState extends State<AdministradorScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: const Text('Administração'),
         backgroundColor: const Color(0xFF0B1F3A),
         foregroundColor: Colors.white,

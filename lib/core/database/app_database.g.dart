@@ -2805,6 +2805,373 @@ class FechamentosMensaisCompanion extends UpdateCompanion<FechamentosMensai> {
   }
 }
 
+class $PagamentosMensaisTable extends PagamentosMensais
+    with TableInfo<$PagamentosMensaisTable, PagamentosMensai> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PagamentosMensaisTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _usuarioIdMeta = const VerificationMeta(
+    'usuarioId',
+  );
+  @override
+  late final GeneratedColumn<int> usuarioId = GeneratedColumn<int>(
+    'usuario_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES usuarios (id)',
+    ),
+  );
+  static const VerificationMeta _mesReferenciaMeta = const VerificationMeta(
+    'mesReferencia',
+  );
+  @override
+  late final GeneratedColumn<String> mesReferencia = GeneratedColumn<String>(
+    'mes_referencia',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valorCentavosMeta = const VerificationMeta(
+    'valorCentavos',
+  );
+  @override
+  late final GeneratedColumn<int> valorCentavos = GeneratedColumn<int>(
+    'valor_centavos',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pagoEmMeta = const VerificationMeta('pagoEm');
+  @override
+  late final GeneratedColumn<DateTime> pagoEm = GeneratedColumn<DateTime>(
+    'pago_em',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    usuarioId,
+    mesReferencia,
+    valorCentavos,
+    pagoEm,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pagamentos_mensais';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PagamentosMensai> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('usuario_id')) {
+      context.handle(
+        _usuarioIdMeta,
+        usuarioId.isAcceptableOrUnknown(data['usuario_id']!, _usuarioIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_usuarioIdMeta);
+    }
+    if (data.containsKey('mes_referencia')) {
+      context.handle(
+        _mesReferenciaMeta,
+        mesReferencia.isAcceptableOrUnknown(
+          data['mes_referencia']!,
+          _mesReferenciaMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_mesReferenciaMeta);
+    }
+    if (data.containsKey('valor_centavos')) {
+      context.handle(
+        _valorCentavosMeta,
+        valorCentavos.isAcceptableOrUnknown(
+          data['valor_centavos']!,
+          _valorCentavosMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_valorCentavosMeta);
+    }
+    if (data.containsKey('pago_em')) {
+      context.handle(
+        _pagoEmMeta,
+        pagoEm.isAcceptableOrUnknown(data['pago_em']!, _pagoEmMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {usuarioId, mesReferencia},
+  ];
+  @override
+  PagamentosMensai map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PagamentosMensai(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      usuarioId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}usuario_id'],
+      )!,
+      mesReferencia: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mes_referencia'],
+      )!,
+      valorCentavos: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}valor_centavos'],
+      )!,
+      pagoEm: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}pago_em'],
+      )!,
+    );
+  }
+
+  @override
+  $PagamentosMensaisTable createAlias(String alias) {
+    return $PagamentosMensaisTable(attachedDatabase, alias);
+  }
+}
+
+class PagamentosMensai extends DataClass
+    implements Insertable<PagamentosMensai> {
+  final int id;
+  final int usuarioId;
+  final String mesReferencia;
+  final int valorCentavos;
+  final DateTime pagoEm;
+  const PagamentosMensai({
+    required this.id,
+    required this.usuarioId,
+    required this.mesReferencia,
+    required this.valorCentavos,
+    required this.pagoEm,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['usuario_id'] = Variable<int>(usuarioId);
+    map['mes_referencia'] = Variable<String>(mesReferencia);
+    map['valor_centavos'] = Variable<int>(valorCentavos);
+    map['pago_em'] = Variable<DateTime>(pagoEm);
+    return map;
+  }
+
+  PagamentosMensaisCompanion toCompanion(bool nullToAbsent) {
+    return PagamentosMensaisCompanion(
+      id: Value(id),
+      usuarioId: Value(usuarioId),
+      mesReferencia: Value(mesReferencia),
+      valorCentavos: Value(valorCentavos),
+      pagoEm: Value(pagoEm),
+    );
+  }
+
+  factory PagamentosMensai.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PagamentosMensai(
+      id: serializer.fromJson<int>(json['id']),
+      usuarioId: serializer.fromJson<int>(json['usuarioId']),
+      mesReferencia: serializer.fromJson<String>(json['mesReferencia']),
+      valorCentavos: serializer.fromJson<int>(json['valorCentavos']),
+      pagoEm: serializer.fromJson<DateTime>(json['pagoEm']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'usuarioId': serializer.toJson<int>(usuarioId),
+      'mesReferencia': serializer.toJson<String>(mesReferencia),
+      'valorCentavos': serializer.toJson<int>(valorCentavos),
+      'pagoEm': serializer.toJson<DateTime>(pagoEm),
+    };
+  }
+
+  PagamentosMensai copyWith({
+    int? id,
+    int? usuarioId,
+    String? mesReferencia,
+    int? valorCentavos,
+    DateTime? pagoEm,
+  }) => PagamentosMensai(
+    id: id ?? this.id,
+    usuarioId: usuarioId ?? this.usuarioId,
+    mesReferencia: mesReferencia ?? this.mesReferencia,
+    valorCentavos: valorCentavos ?? this.valorCentavos,
+    pagoEm: pagoEm ?? this.pagoEm,
+  );
+  PagamentosMensai copyWithCompanion(PagamentosMensaisCompanion data) {
+    return PagamentosMensai(
+      id: data.id.present ? data.id.value : this.id,
+      usuarioId: data.usuarioId.present ? data.usuarioId.value : this.usuarioId,
+      mesReferencia: data.mesReferencia.present
+          ? data.mesReferencia.value
+          : this.mesReferencia,
+      valorCentavos: data.valorCentavos.present
+          ? data.valorCentavos.value
+          : this.valorCentavos,
+      pagoEm: data.pagoEm.present ? data.pagoEm.value : this.pagoEm,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PagamentosMensai(')
+          ..write('id: $id, ')
+          ..write('usuarioId: $usuarioId, ')
+          ..write('mesReferencia: $mesReferencia, ')
+          ..write('valorCentavos: $valorCentavos, ')
+          ..write('pagoEm: $pagoEm')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, usuarioId, mesReferencia, valorCentavos, pagoEm);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PagamentosMensai &&
+          other.id == this.id &&
+          other.usuarioId == this.usuarioId &&
+          other.mesReferencia == this.mesReferencia &&
+          other.valorCentavos == this.valorCentavos &&
+          other.pagoEm == this.pagoEm);
+}
+
+class PagamentosMensaisCompanion extends UpdateCompanion<PagamentosMensai> {
+  final Value<int> id;
+  final Value<int> usuarioId;
+  final Value<String> mesReferencia;
+  final Value<int> valorCentavos;
+  final Value<DateTime> pagoEm;
+  const PagamentosMensaisCompanion({
+    this.id = const Value.absent(),
+    this.usuarioId = const Value.absent(),
+    this.mesReferencia = const Value.absent(),
+    this.valorCentavos = const Value.absent(),
+    this.pagoEm = const Value.absent(),
+  });
+  PagamentosMensaisCompanion.insert({
+    this.id = const Value.absent(),
+    required int usuarioId,
+    required String mesReferencia,
+    required int valorCentavos,
+    this.pagoEm = const Value.absent(),
+  }) : usuarioId = Value(usuarioId),
+       mesReferencia = Value(mesReferencia),
+       valorCentavos = Value(valorCentavos);
+  static Insertable<PagamentosMensai> custom({
+    Expression<int>? id,
+    Expression<int>? usuarioId,
+    Expression<String>? mesReferencia,
+    Expression<int>? valorCentavos,
+    Expression<DateTime>? pagoEm,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (usuarioId != null) 'usuario_id': usuarioId,
+      if (mesReferencia != null) 'mes_referencia': mesReferencia,
+      if (valorCentavos != null) 'valor_centavos': valorCentavos,
+      if (pagoEm != null) 'pago_em': pagoEm,
+    });
+  }
+
+  PagamentosMensaisCompanion copyWith({
+    Value<int>? id,
+    Value<int>? usuarioId,
+    Value<String>? mesReferencia,
+    Value<int>? valorCentavos,
+    Value<DateTime>? pagoEm,
+  }) {
+    return PagamentosMensaisCompanion(
+      id: id ?? this.id,
+      usuarioId: usuarioId ?? this.usuarioId,
+      mesReferencia: mesReferencia ?? this.mesReferencia,
+      valorCentavos: valorCentavos ?? this.valorCentavos,
+      pagoEm: pagoEm ?? this.pagoEm,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (usuarioId.present) {
+      map['usuario_id'] = Variable<int>(usuarioId.value);
+    }
+    if (mesReferencia.present) {
+      map['mes_referencia'] = Variable<String>(mesReferencia.value);
+    }
+    if (valorCentavos.present) {
+      map['valor_centavos'] = Variable<int>(valorCentavos.value);
+    }
+    if (pagoEm.present) {
+      map['pago_em'] = Variable<DateTime>(pagoEm.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PagamentosMensaisCompanion(')
+          ..write('id: $id, ')
+          ..write('usuarioId: $usuarioId, ')
+          ..write('mesReferencia: $mesReferencia, ')
+          ..write('valorCentavos: $valorCentavos, ')
+          ..write('pagoEm: $pagoEm')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $InventariosTable extends Inventarios
     with TableInfo<$InventariosTable, Inventario> {
   @override
@@ -3724,6 +4091,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MovimentacoesEstoqueTable(this);
   late final $FechamentosMensaisTable fechamentosMensais =
       $FechamentosMensaisTable(this);
+  late final $PagamentosMensaisTable pagamentosMensais =
+      $PagamentosMensaisTable(this);
   late final $InventariosTable inventarios = $InventariosTable(this);
   late final $ItensInventarioTable itensInventario = $ItensInventarioTable(
     this,
@@ -3739,6 +4108,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     itensRetirada,
     movimentacoesEstoque,
     fechamentosMensais,
+    pagamentosMensais,
     inventarios,
     itensInventario,
   ];
@@ -3835,6 +4205,27 @@ final class $$UsuariosTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$PagamentosMensaisTable, List<PagamentosMensai>>
+  _pagamentosMensaisRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.pagamentosMensais,
+        aliasName: 'usuarios__id__pagamentos_mensais__usuario_id',
+      );
+
+  $$PagamentosMensaisTableProcessedTableManager get pagamentosMensaisRefs {
+    final manager = $$PagamentosMensaisTableTableManager(
+      $_db,
+      $_db.pagamentosMensais,
+    ).filter((f) => f.usuarioId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _pagamentosMensaisRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$UsuariosTableFilterComposer
@@ -3922,6 +4313,31 @@ class $$UsuariosTableFilterComposer
           }) => $$MovimentacoesEstoqueTableFilterComposer(
             $db: $db,
             $table: $db.movimentacoesEstoque,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> pagamentosMensaisRefs(
+    Expression<bool> Function($$PagamentosMensaisTableFilterComposer f) f,
+  ) {
+    final $$PagamentosMensaisTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pagamentosMensais,
+      getReferencedColumn: (t) => t.usuarioId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PagamentosMensaisTableFilterComposer(
+            $db: $db,
+            $table: $db.pagamentosMensais,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4057,6 +4473,32 @@ class $$UsuariosTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> pagamentosMensaisRefs<T extends Object>(
+    Expression<T> Function($$PagamentosMensaisTableAnnotationComposer a) f,
+  ) {
+    final $$PagamentosMensaisTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.pagamentosMensais,
+          getReferencedColumn: (t) => t.usuarioId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PagamentosMensaisTableAnnotationComposer(
+                $db: $db,
+                $table: $db.pagamentosMensais,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$UsuariosTableTableManager
@@ -4075,6 +4517,7 @@ class $$UsuariosTableTableManager
           PrefetchHooks Function({
             bool retiradasRefs,
             bool movimentacoesEstoqueRefs,
+            bool pagamentosMensaisRefs,
           })
         > {
   $$UsuariosTableTableManager(_$AppDatabase db, $UsuariosTable table)
@@ -4133,12 +4576,17 @@ class $$UsuariosTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({retiradasRefs = false, movimentacoesEstoqueRefs = false}) {
+              ({
+                retiradasRefs = false,
+                movimentacoesEstoqueRefs = false,
+                pagamentosMensaisRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (retiradasRefs) db.retiradas,
                     if (movimentacoesEstoqueRefs) db.movimentacoesEstoque,
+                    if (pagamentosMensaisRefs) db.pagamentosMensais,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -4185,6 +4633,27 @@ class $$UsuariosTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (pagamentosMensaisRefs)
+                        await $_getPrefetchedData<
+                          Usuario,
+                          $UsuariosTable,
+                          PagamentosMensai
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsuariosTableReferences
+                              ._pagamentosMensaisRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsuariosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).pagamentosMensaisRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.usuarioId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -4208,6 +4677,7 @@ typedef $$UsuariosTableProcessedTableManager =
       PrefetchHooks Function({
         bool retiradasRefs,
         bool movimentacoesEstoqueRefs,
+        bool pagamentosMensaisRefs,
       })
     >;
 typedef $$ProdutosTableCreateCompanionBuilder =
@@ -6564,6 +7034,337 @@ typedef $$FechamentosMensaisTableProcessedTableManager =
       FechamentosMensai,
       PrefetchHooks Function()
     >;
+typedef $$PagamentosMensaisTableCreateCompanionBuilder =
+    PagamentosMensaisCompanion Function({
+      Value<int> id,
+      required int usuarioId,
+      required String mesReferencia,
+      required int valorCentavos,
+      Value<DateTime> pagoEm,
+    });
+typedef $$PagamentosMensaisTableUpdateCompanionBuilder =
+    PagamentosMensaisCompanion Function({
+      Value<int> id,
+      Value<int> usuarioId,
+      Value<String> mesReferencia,
+      Value<int> valorCentavos,
+      Value<DateTime> pagoEm,
+    });
+
+final class $$PagamentosMensaisTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $PagamentosMensaisTable,
+          PagamentosMensai
+        > {
+  $$PagamentosMensaisTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $UsuariosTable _usuarioIdTable(_$AppDatabase db) =>
+      db.usuarios.createAlias('pagamentos_mensais__usuario_id__usuarios__id');
+
+  $$UsuariosTableProcessedTableManager get usuarioId {
+    final $_column = $_itemColumn<int>('usuario_id')!;
+
+    final manager = $$UsuariosTableTableManager(
+      $_db,
+      $_db.usuarios,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_usuarioIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PagamentosMensaisTableFilterComposer
+    extends Composer<_$AppDatabase, $PagamentosMensaisTable> {
+  $$PagamentosMensaisTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mesReferencia => $composableBuilder(
+    column: $table.mesReferencia,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get valorCentavos => $composableBuilder(
+    column: $table.valorCentavos,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get pagoEm => $composableBuilder(
+    column: $table.pagoEm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$UsuariosTableFilterComposer get usuarioId {
+    final $$UsuariosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.usuarioId,
+      referencedTable: $db.usuarios,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsuariosTableFilterComposer(
+            $db: $db,
+            $table: $db.usuarios,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PagamentosMensaisTableOrderingComposer
+    extends Composer<_$AppDatabase, $PagamentosMensaisTable> {
+  $$PagamentosMensaisTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mesReferencia => $composableBuilder(
+    column: $table.mesReferencia,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get valorCentavos => $composableBuilder(
+    column: $table.valorCentavos,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get pagoEm => $composableBuilder(
+    column: $table.pagoEm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$UsuariosTableOrderingComposer get usuarioId {
+    final $$UsuariosTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.usuarioId,
+      referencedTable: $db.usuarios,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsuariosTableOrderingComposer(
+            $db: $db,
+            $table: $db.usuarios,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PagamentosMensaisTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PagamentosMensaisTable> {
+  $$PagamentosMensaisTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get mesReferencia => $composableBuilder(
+    column: $table.mesReferencia,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get valorCentavos => $composableBuilder(
+    column: $table.valorCentavos,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get pagoEm =>
+      $composableBuilder(column: $table.pagoEm, builder: (column) => column);
+
+  $$UsuariosTableAnnotationComposer get usuarioId {
+    final $$UsuariosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.usuarioId,
+      referencedTable: $db.usuarios,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsuariosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.usuarios,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PagamentosMensaisTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PagamentosMensaisTable,
+          PagamentosMensai,
+          $$PagamentosMensaisTableFilterComposer,
+          $$PagamentosMensaisTableOrderingComposer,
+          $$PagamentosMensaisTableAnnotationComposer,
+          $$PagamentosMensaisTableCreateCompanionBuilder,
+          $$PagamentosMensaisTableUpdateCompanionBuilder,
+          (PagamentosMensai, $$PagamentosMensaisTableReferences),
+          PagamentosMensai,
+          PrefetchHooks Function({bool usuarioId})
+        > {
+  $$PagamentosMensaisTableTableManager(
+    _$AppDatabase db,
+    $PagamentosMensaisTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PagamentosMensaisTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PagamentosMensaisTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PagamentosMensaisTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> usuarioId = const Value.absent(),
+                Value<String> mesReferencia = const Value.absent(),
+                Value<int> valorCentavos = const Value.absent(),
+                Value<DateTime> pagoEm = const Value.absent(),
+              }) => PagamentosMensaisCompanion(
+                id: id,
+                usuarioId: usuarioId,
+                mesReferencia: mesReferencia,
+                valorCentavos: valorCentavos,
+                pagoEm: pagoEm,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int usuarioId,
+                required String mesReferencia,
+                required int valorCentavos,
+                Value<DateTime> pagoEm = const Value.absent(),
+              }) => PagamentosMensaisCompanion.insert(
+                id: id,
+                usuarioId: usuarioId,
+                mesReferencia: mesReferencia,
+                valorCentavos: valorCentavos,
+                pagoEm: pagoEm,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PagamentosMensaisTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({usuarioId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (usuarioId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.usuarioId,
+                                referencedTable:
+                                    $$PagamentosMensaisTableReferences
+                                        ._usuarioIdTable(db),
+                                referencedColumn:
+                                    $$PagamentosMensaisTableReferences
+                                        ._usuarioIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PagamentosMensaisTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PagamentosMensaisTable,
+      PagamentosMensai,
+      $$PagamentosMensaisTableFilterComposer,
+      $$PagamentosMensaisTableOrderingComposer,
+      $$PagamentosMensaisTableAnnotationComposer,
+      $$PagamentosMensaisTableCreateCompanionBuilder,
+      $$PagamentosMensaisTableUpdateCompanionBuilder,
+      (PagamentosMensai, $$PagamentosMensaisTableReferences),
+      PagamentosMensai,
+      PrefetchHooks Function({bool usuarioId})
+    >;
 typedef $$InventariosTableCreateCompanionBuilder =
     InventariosCompanion Function({
       Value<int> id,
@@ -7365,6 +8166,8 @@ class $AppDatabaseManager {
       $$MovimentacoesEstoqueTableTableManager(_db, _db.movimentacoesEstoque);
   $$FechamentosMensaisTableTableManager get fechamentosMensais =>
       $$FechamentosMensaisTableTableManager(_db, _db.fechamentosMensais);
+  $$PagamentosMensaisTableTableManager get pagamentosMensais =>
+      $$PagamentosMensaisTableTableManager(_db, _db.pagamentosMensais);
   $$InventariosTableTableManager get inventarios =>
       $$InventariosTableTableManager(_db, _db.inventarios);
   $$ItensInventarioTableTableManager get itensInventario =>

@@ -64,6 +64,22 @@ class ResumoUsuarioRelatorio {
   final int totalCentavos;
 }
 
+class ResumoMesFechado {
+  const ResumoMesFechado({
+    required this.mesReferencia,
+    required this.fechadoEm,
+    required this.totalCentavos,
+    required this.quantidadeRetiradas,
+    required this.quantidadeUsuarios,
+  });
+
+  final String mesReferencia;
+  final DateTime fechadoEm;
+  final int totalCentavos;
+  final int quantidadeRetiradas;
+  final int quantidadeUsuarios;
+}
+
 class MovimentacaoEstoqueDetalhada {
   const MovimentacaoEstoqueDetalhada({
     required this.id,
@@ -203,6 +219,23 @@ class FechamentosMensais extends Table {
   DateTimeColumn get fechadoEm => dateTime().withDefault(currentDateAndTime)();
 }
 
+class PagamentosMensais extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  IntColumn get usuarioId => integer().references(Usuarios, #id)();
+
+  TextColumn get mesReferencia => text()();
+
+  IntColumn get valorCentavos => integer()();
+
+  DateTimeColumn get pagoEm => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {usuarioId, mesReferencia},
+  ];
+}
+
 class Inventarios extends Table {
   IntColumn get id => integer().autoIncrement()();
 
@@ -242,6 +275,7 @@ class ItensInventario extends Table {
     ItensRetirada,
     MovimentacoesEstoque,
     FechamentosMensais,
+    PagamentosMensais,
     Inventarios,
     ItensInventario,
   ],
@@ -260,7 +294,7 @@ final class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
@@ -329,6 +363,9 @@ final class AppDatabase extends _$AppDatabase {
         if (de < 4) {
           await migrator.createTable(inventarios);
           await migrator.createTable(itensInventario);
+        }
+        if (de < 5) {
+          await migrator.createTable(pagamentosMensais);
         }
       },
     );
@@ -799,6 +836,45 @@ final class AppDatabase extends _$AppDatabase {
           dataHora: Value(dataHora ?? DateTime.now()),
         ),
       );
+    });
+  }
+
+  Stream<List<ResumoMesFechado>> observarHistoricoMesesFechados() {
+    final consulta = select(fechamentosMensais)
+      ..orderBy([(tabela) => OrderingTerm.desc(tabela.mesReferencia)]);
+
+    return consulta.watch().asyncMap((listaFechamentos) async {
+      final resultado = <ResumoMesFechado>[];
+
+      for (final fechamento in listaFechamentos) {
+        final retiradasDoMes =
+            await (select(retiradas)..where(
+                  (tabela) =>
+                      tabela.mesReferencia.equals(fechamento.mesReferencia),
+                ))
+                .get();
+
+        final totalCentavos = retiradasDoMes.fold<int>(
+          0,
+          (total, retirada) => total + retirada.totalCentavos,
+        );
+
+        final usuariosDoMes = retiradasDoMes
+            .map((retirada) => retirada.usuarioId)
+            .toSet();
+
+        resultado.add(
+          ResumoMesFechado(
+            mesReferencia: fechamento.mesReferencia,
+            fechadoEm: fechamento.fechadoEm,
+            totalCentavos: totalCentavos,
+            quantidadeRetiradas: retiradasDoMes.length,
+            quantidadeUsuarios: usuariosDoMes.length,
+          ),
+        );
+      }
+
+      return resultado;
     });
   }
 
