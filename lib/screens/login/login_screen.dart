@@ -44,10 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 pinDigitado = valor;
               },
               onSubmitted: (valor) {
-                Navigator.pop(
-                  dialogContext,
-                  valor == usuario.pin,
-                );
+                Navigator.pop(dialogContext, valor == usuario.pin);
               },
             ),
           ),
@@ -60,10 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(
-                  dialogContext,
-                  pinDigitado == usuario.pin,
-                );
+                Navigator.pop(dialogContext, pinDigitado == usuario.pin);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFFC107),
@@ -93,21 +87,17 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (!autorizado) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN incorreto.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('PIN incorreto.')));
       return;
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          usuarioId: usuario.id,
-          nomeUsuario: usuario.nome,
-        ),
+        builder: (context) =>
+            HomeScreen(usuarioId: usuario.id, nomeUsuario: usuario.nome),
       ),
     );
   }
@@ -139,9 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
 
                 if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final usuariosAtivos = snapshot.data!
@@ -152,18 +140,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   return const Center(
                     child: Text(
                       'Nenhum usuário ativo cadastrado.',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black54,
-                      ),
+                      style: TextStyle(fontSize: 18, color: Colors.black54),
                     ),
                   );
                 }
 
                 if (usuarioSelecionado != null &&
                     !usuariosAtivos.any(
-                      (usuario) =>
-                          usuario.id == usuarioSelecionado!.id,
+                      (usuario) => usuario.id == usuarioSelecionado!.id,
                     )) {
                   usuarioSelecionado = null;
                 }
@@ -203,9 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             children: [
                               Icon(
-                                usuario.pinAtivo
-                                    ? Icons.lock
-                                    : Icons.lock_open,
+                                usuario.pinAtivo ? Icons.lock : Icons.lock_open,
                                 size: 18,
                                 color: const Color(0xFF0B1F3A),
                               ),
@@ -226,8 +208,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed:
-                            usuarioSelecionado == null ? null : continuar,
+                        onPressed: usuarioSelecionado == null
+                            ? null
+                            : continuar,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFFC107),
                           foregroundColor: Colors.black,

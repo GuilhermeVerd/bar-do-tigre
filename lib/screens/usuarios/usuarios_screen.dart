@@ -13,15 +13,11 @@ class UsuariosScreen extends StatefulWidget {
 class _UsuariosScreenState extends State<UsuariosScreen> {
   final UsuarioRepository repository = UsuarioRepository();
 
-  Future<void> abrirFormulario({
-    Usuario? usuario,
-  }) async {
+  Future<void> abrirFormulario({Usuario? usuario}) async {
     final resultado = await showDialog<_DadosUsuario>(
       context: context,
       builder: (dialogContext) {
-        return _FormularioUsuarioDialog(
-          usuario: usuario,
-        );
+        return _FormularioUsuarioDialog(usuario: usuario);
       },
     );
 
@@ -67,35 +63,21 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Não foi possível salvar o usuário: $erro',
-          ),
-        ),
+        SnackBar(content: Text('Não foi possível salvar o usuário: $erro')),
       );
     }
   }
 
-  Future<void> alterarSituacao(
-    Usuario usuario,
-    bool ativo,
-  ) async {
+  Future<void> alterarSituacao(Usuario usuario, bool ativo) async {
     try {
-      await repository.alterarSituacaoUsuario(
-        id: usuario.id,
-        ativo: ativo,
-      );
+      await repository.alterarSituacaoUsuario(id: usuario.id, ativo: ativo);
     } catch (erro) {
       if (!mounted) {
         return;
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Não foi possível alterar o usuário: $erro',
-          ),
-        ),
+        SnackBar(content: Text('Não foi possível alterar o usuário: $erro')),
       );
     }
   }
@@ -148,9 +130,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
               }
 
               if (!snapshot.hasData) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               final usuarios = snapshot.data!;
@@ -159,21 +139,13 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
                 return const Center(
                   child: Text(
                     'Nenhum usuário cadastrado.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black54,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.black54),
                   ),
                 );
               }
 
               return ListView.separated(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  100,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
                 itemCount: usuarios.length,
                 separatorBuilder: (_, _) {
                   return const SizedBox(height: 12);
@@ -189,8 +161,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
                         children: [
                           CircleAvatar(
                             radius: 28,
-                            backgroundColor:
-                                const Color(0xFFE8EDF4),
+                            backgroundColor: const Color(0xFFE8EDF4),
                             child: Icon(
                               usuario.tipo == 'oficial'
                                   ? Icons.military_tech
@@ -201,8 +172,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   usuario.nome,
@@ -217,9 +187,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   formatarTipo(usuario.tipo),
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
+                                  style: const TextStyle(color: Colors.black54),
                                 ),
                                 const SizedBox(height: 6),
                                 Row(
@@ -250,19 +218,14 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
                           IconButton(
                             tooltip: 'Editar',
                             onPressed: () {
-                              abrirFormulario(
-                                usuario: usuario,
-                              );
+                              abrirFormulario(usuario: usuario);
                             },
                             icon: const Icon(Icons.edit),
                           ),
                           Switch(
                             value: usuario.ativo,
                             onChanged: (valor) {
-                              alterarSituacao(
-                                usuario,
-                                valor,
-                              );
+                              alterarSituacao(usuario, valor);
                             },
                           ),
                         ],
@@ -280,9 +243,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
 }
 
 class _FormularioUsuarioDialog extends StatefulWidget {
-  const _FormularioUsuarioDialog({
-    this.usuario,
-  });
+  const _FormularioUsuarioDialog({this.usuario});
 
   final Usuario? usuario;
 
@@ -291,8 +252,7 @@ class _FormularioUsuarioDialog extends StatefulWidget {
       _FormularioUsuarioDialogState();
 }
 
-class _FormularioUsuarioDialogState
-    extends State<_FormularioUsuarioDialog> {
+class _FormularioUsuarioDialogState extends State<_FormularioUsuarioDialog> {
   final formularioKey = GlobalKey<FormState>();
 
   late String nome;
@@ -332,9 +292,7 @@ class _FormularioUsuarioDialogState
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        widget.usuario == null
-            ? 'Cadastrar usuário'
-            : 'Editar usuário',
+        widget.usuario == null ? 'Cadastrar usuário' : 'Editar usuário',
       ),
       content: SizedBox(
         width: 460,
@@ -353,8 +311,7 @@ class _FormularioUsuarioDialogState
                     border: OutlineInputBorder(),
                   ),
                   validator: (valor) {
-                    if (valor == null ||
-                        valor.trim().length < 2) {
+                    if (valor == null || valor.trim().length < 2) {
                       return 'Informe um nome válido.';
                     }
 
@@ -373,10 +330,7 @@ class _FormularioUsuarioDialogState
                     border: OutlineInputBorder(),
                   ),
                   items: const [
-                    DropdownMenuItem(
-                      value: 'oficial',
-                      child: Text('Oficial'),
-                    ),
+                    DropdownMenuItem(value: 'oficial', child: Text('Oficial')),
                     DropdownMenuItem(
                       value: 'convidado',
                       child: Text('Convidado'),
@@ -394,9 +348,7 @@ class _FormularioUsuarioDialogState
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Usar PIN'),
-                  subtitle: const Text(
-                    'Exigir PIN para acessar este usuário',
-                  ),
+                  subtitle: const Text('Exigir PIN para acessar este usuário'),
                   value: pinAtivo,
                   onChanged: (valor) {
                     setState(() {

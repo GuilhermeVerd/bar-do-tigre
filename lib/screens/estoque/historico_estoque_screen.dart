@@ -20,23 +20,16 @@ class HistoricoEstoqueScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 950,
-            ),
-            child: StreamBuilder<
-                List<MovimentacaoEstoqueDetalhada>>(
+            constraints: const BoxConstraints(maxWidth: 950),
+            child: StreamBuilder<List<MovimentacaoEstoqueDetalhada>>(
               stream: repository.observarMovimentacoes(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return _EstadoErro(
-                    erro: snapshot.error.toString(),
-                  );
+                  return _EstadoErro(erro: snapshot.error.toString());
                 }
 
                 if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final movimentacoes = snapshot.data!;
@@ -53,8 +46,7 @@ class HistoricoEstoqueScreen extends StatelessWidget {
                   },
                   itemBuilder: (context, index) {
                     return _MovimentacaoCard(
-                      movimentacao:
-                          movimentacoes[index],
+                      movimentacao: movimentacoes[index],
                     );
                   },
                 );
@@ -68,9 +60,7 @@ class HistoricoEstoqueScreen extends StatelessWidget {
 }
 
 class _MovimentacaoCard extends StatelessWidget {
-  const _MovimentacaoCard({
-    required this.movimentacao,
-  });
+  const _MovimentacaoCard({required this.movimentacao});
 
   final MovimentacaoEstoqueDetalhada movimentacao;
 
@@ -83,14 +73,10 @@ class _MovimentacaoCard extends StatelessWidget {
   }
 
   String formatarData(DateTime data) {
-    final dia =
-        data.day.toString().padLeft(2, '0');
-    final mes =
-        data.month.toString().padLeft(2, '0');
-    final hora =
-        data.hour.toString().padLeft(2, '0');
-    final minuto =
-        data.minute.toString().padLeft(2, '0');
+    final dia = data.day.toString().padLeft(2, '0');
+    final mes = data.month.toString().padLeft(2, '0');
+    final hora = data.hour.toString().padLeft(2, '0');
+    final minuto = data.minute.toString().padLeft(2, '0');
 
     return '$dia/$mes/${data.year} às $hora:$minuto';
   }
@@ -100,26 +86,26 @@ class _MovimentacaoCard extends StatelessWidget {
     final cor = entrada
         ? Colors.green.shade700
         : saida
-            ? Colors.red.shade700
-            : Colors.orange.shade700;
+        ? Colors.red.shade700
+        : Colors.orange.shade700;
 
     final icone = entrada
         ? Icons.add_circle_outline
         : saida
-            ? Icons.remove_circle_outline
-            : Icons.tune;
+        ? Icons.remove_circle_outline
+        : Icons.tune;
 
     final sinal = entrada
         ? '+'
         : saida
-            ? '-'
-            : '';
+        ? '-'
+        : '';
 
     final tituloTipo = entrada
         ? 'Entrada'
         : saida
-            ? 'Saída'
-            : 'Ajuste';
+        ? 'Saída'
+        : 'Ajuste';
 
     return Card(
       elevation: 2,
@@ -130,18 +116,13 @@ class _MovimentacaoCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 27,
-              backgroundColor:
-                  cor.withValues(alpha: 0.12),
-              child: Icon(
-                icone,
-                color: cor,
-              ),
+              backgroundColor: cor.withValues(alpha: 0.12),
+              child: Icon(icone, color: cor),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -150,10 +131,8 @@ class _MovimentacaoCard extends StatelessWidget {
                           movimentacao.nomeProduto,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight:
-                                FontWeight.bold,
-                            color:
-                                Color(0xFF0B1F3A),
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0B1F3A),
                           ),
                         ),
                       ),
@@ -170,52 +149,36 @@ class _MovimentacaoCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     tituloTipo,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: cor,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: cor),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Estoque: '
                     '${movimentacao.estoqueAnterior} → '
                     '${movimentacao.estoquePosterior}',
-                    style: const TextStyle(
-                      color: Colors.black87,
-                    ),
+                    style: const TextStyle(color: Colors.black87),
                   ),
                   if (movimentacao.nomeUsuario != null &&
-                      movimentacao
-                          .nomeUsuario!.isNotEmpty) ...[
+                      movimentacao.nomeUsuario!.isNotEmpty) ...[
                     const SizedBox(height: 5),
                     Text(
                       'Usuário: '
                       '${movimentacao.nomeUsuario}',
-                      style: const TextStyle(
-                        color: Colors.black54,
-                      ),
+                      style: const TextStyle(color: Colors.black54),
                     ),
                   ],
                   if (movimentacao.observacao != null &&
-                      movimentacao
-                          .observacao!.isNotEmpty) ...[
+                      movimentacao.observacao!.isNotEmpty) ...[
                     const SizedBox(height: 5),
                     Text(
                       movimentacao.observacao!,
-                      style: const TextStyle(
-                        color: Colors.black54,
-                      ),
+                      style: const TextStyle(color: Colors.black54),
                     ),
                   ],
                   const SizedBox(height: 8),
                   Text(
-                    formatarData(
-                      movimentacao.dataHora,
-                    ),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black45,
-                    ),
+                    formatarData(movimentacao.dataHora),
+                    style: const TextStyle(fontSize: 12, color: Colors.black45),
                   ),
                 ],
               ),
@@ -236,19 +199,12 @@ class _EstadoVazio extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.history,
-            size: 90,
-            color: Colors.black26,
-          ),
+          Icon(Icons.history, size: 90, color: Colors.black26),
           SizedBox(height: 16),
           Text(
             'Nenhuma movimentação registrada.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black54,
-            ),
+            style: TextStyle(fontSize: 20, color: Colors.black54),
           ),
         ],
       ),
@@ -257,9 +213,7 @@ class _EstadoVazio extends StatelessWidget {
 }
 
 class _EstadoErro extends StatelessWidget {
-  const _EstadoErro({
-    required this.erro,
-  });
+  const _EstadoErro({required this.erro});
 
   final String erro;
 
@@ -272,9 +226,7 @@ class _EstadoErro extends StatelessWidget {
           'Não foi possível carregar o histórico.\n\n'
           '$erro',
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.red,
-          ),
+          style: const TextStyle(color: Colors.red),
         ),
       ),
     );

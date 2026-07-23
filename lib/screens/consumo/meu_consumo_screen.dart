@@ -14,13 +14,11 @@ class MeuConsumoScreen extends StatefulWidget {
   final String nomeUsuario;
 
   @override
-  State<MeuConsumoScreen> createState() =>
-      _MeuConsumoScreenState();
+  State<MeuConsumoScreen> createState() => _MeuConsumoScreenState();
 }
 
 class _MeuConsumoScreenState extends State<MeuConsumoScreen> {
-  final RetiradaRepository repository =
-      RetiradaRepository();
+  final RetiradaRepository repository = RetiradaRepository();
 
   late DateTime mesSelecionado;
 
@@ -56,25 +54,16 @@ class _MeuConsumoScreenState extends State<MeuConsumoScreen> {
 
   void mesAnterior() {
     setState(() {
-      mesSelecionado = DateTime(
-        mesSelecionado.year,
-        mesSelecionado.month - 1,
-      );
+      mesSelecionado = DateTime(mesSelecionado.year, mesSelecionado.month - 1);
     });
   }
 
   void proximoMes() {
     final agora = DateTime.now();
 
-    final proximo = DateTime(
-      mesSelecionado.year,
-      mesSelecionado.month + 1,
-    );
+    final proximo = DateTime(mesSelecionado.year, mesSelecionado.month + 1);
 
-    final mesAtual = DateTime(
-      agora.year,
-      agora.month,
-    );
+    final mesAtual = DateTime(agora.year, agora.month);
 
     if (proximo.isAfter(mesAtual)) {
       return;
@@ -99,20 +88,16 @@ class _MeuConsumoScreenState extends State<MeuConsumoScreen> {
   }
 
   String formatarData(DateTime dataHora) {
-    final dia =
-        dataHora.day.toString().padLeft(2, '0');
-    final mes =
-        dataHora.month.toString().padLeft(2, '0');
+    final dia = dataHora.day.toString().padLeft(2, '0');
+    final mes = dataHora.month.toString().padLeft(2, '0');
     final ano = dataHora.year.toString();
 
     return '$dia/$mes/$ano';
   }
 
   String formatarHora(DateTime dataHora) {
-    final hora =
-        dataHora.hour.toString().padLeft(2, '0');
-    final minuto =
-        dataHora.minute.toString().padLeft(2, '0');
+    final hora = dataHora.hour.toString().padLeft(2, '0');
+    final minuto = dataHora.minute.toString().padLeft(2, '0');
 
     return '$hora:$minuto';
   }
@@ -149,17 +134,14 @@ class _MeuConsumoScreenState extends State<MeuConsumoScreen> {
               }
 
               if (!snapshot.hasData) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               final retiradas = snapshot.data!;
 
               final totalDoMes = retiradas.fold<int>(
                 0,
-                (total, retirada) =>
-                    total + retirada.totalCentavos,
+                (total, retirada) => total + retirada.totalCentavos,
               );
 
               return Column(
@@ -169,45 +151,31 @@ class _MeuConsumoScreenState extends State<MeuConsumoScreen> {
                         '${nomeDoMes(mesSelecionado.month)} '
                         '${mesSelecionado.year}',
                     aoVoltar: mesAnterior,
-                    aoAvancar:
-                        podeAvancarMes ? proximoMes : null,
+                    aoAvancar: podeAvancarMes ? proximoMes : null,
                   ),
                   _ResumoMensal(
                     nomeUsuario: widget.nomeUsuario,
                     totalDoMesCentavos: totalDoMes,
-                    quantidadeRetiradas:
-                        retiradas.length,
+                    quantidadeRetiradas: retiradas.length,
                     formatarPreco: formatarPreco,
                   ),
                   Expanded(
                     child: retiradas.isEmpty
                         ? const _EstadoVazio()
                         : ListView.separated(
-                            padding:
-                                const EdgeInsets.fromLTRB(
-                              20,
-                              4,
-                              20,
-                              24,
-                            ),
+                            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                             itemCount: retiradas.length,
                             separatorBuilder: (_, _) {
-                              return const SizedBox(
-                                height: 14,
-                              );
+                              return const SizedBox(height: 14);
                             },
                             itemBuilder: (context, index) {
-                              final retirada =
-                                  retiradas[index];
+                              final retirada = retiradas[index];
 
                               return _CardRetirada(
                                 retirada: retirada,
-                                formatarPreco:
-                                    formatarPreco,
-                                formatarData:
-                                    formatarData,
-                                formatarHora:
-                                    formatarHora,
+                                formatarPreco: formatarPreco,
+                                formatarData: formatarData,
+                                formatarHora: formatarHora,
                               );
                             },
                           ),
@@ -236,20 +204,13 @@ class _SeletorMes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        0,
-      ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
         children: [
           IconButton(
             tooltip: 'Mês anterior',
             onPressed: aoVoltar,
-            icon: const Icon(
-              Icons.chevron_left,
-            ),
+            icon: const Icon(Icons.chevron_left),
           ),
           Expanded(
             child: Text(
@@ -265,9 +226,7 @@ class _SeletorMes extends StatelessWidget {
           IconButton(
             tooltip: 'Próximo mês',
             onPressed: aoAvancar,
-            icon: const Icon(
-              Icons.chevron_right,
-            ),
+            icon: const Icon(Icons.chevron_right),
           ),
         ],
       ),
@@ -303,24 +262,16 @@ class _ResumoMensal extends StatelessWidget {
         children: [
           Text(
             nomeUsuario,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 18,
-            ),
+            style: const TextStyle(color: Colors.white70, fontSize: 18),
           ),
           const SizedBox(height: 10),
           const Text(
             'Total consumido no mês',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 17),
           ),
           const SizedBox(height: 6),
           Text(
-            'R\$ ${formatarPreco(
-              totalDoMesCentavos,
-            )}',
+            'R\$ ${formatarPreco(totalDoMesCentavos)}',
             style: const TextStyle(
               color: Color(0xFFFFC107),
               fontSize: 34,
@@ -330,9 +281,7 @@ class _ResumoMensal extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             '$quantidadeRetiradas retirada(s) registrada(s)',
-            style: const TextStyle(
-              color: Colors.white70,
-            ),
+            style: const TextStyle(color: Colors.white70),
           ),
         ],
       ),
@@ -361,25 +310,16 @@ class _CardRetirada extends StatelessWidget {
       child: ExpansionTile(
         leading: const CircleAvatar(
           backgroundColor: Color(0xFFE8EDF4),
-          child: Icon(
-            Icons.receipt_long,
-            color: Color(0xFF0B1F3A),
-          ),
+          child: Icon(Icons.receipt_long, color: Color(0xFF0B1F3A)),
         ),
         title: Text(
           '${formatarData(retirada.dataHora)} '
           'às ${formatarHora(retirada.dataHora)}',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(
-          '${retirada.itens.length} produto(s)',
-        ),
+        subtitle: Text('${retirada.itens.length} produto(s)'),
         trailing: Text(
-          'R\$ ${formatarPreco(
-            retirada.totalCentavos,
-          )}',
+          'R\$ ${formatarPreco(retirada.totalCentavos)}',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -388,21 +328,13 @@ class _CardRetirada extends StatelessWidget {
         ),
         children: [
           const Divider(height: 1),
-          ...retirada.itens.map(
-            (item) {
-              return ListTile(
-                title: Text(item.nomeProduto),
-                subtitle: Text(
-                  'Quantidade: ${item.quantidade}',
-                ),
-                trailing: Text(
-                  'R\$ ${formatarPreco(
-                    item.subtotalCentavos,
-                  )}',
-                ),
-              );
-            },
-          ),
+          ...retirada.itens.map((item) {
+            return ListTile(
+              title: Text(item.nomeProduto),
+              subtitle: Text('Quantidade: ${item.quantidade}'),
+              trailing: Text('R\$ ${formatarPreco(item.subtotalCentavos)}'),
+            );
+          }),
         ],
       ),
     );
@@ -418,18 +350,11 @@ class _EstadoVazio extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 80,
-            color: Colors.black26,
-          ),
+          Icon(Icons.receipt_long_outlined, size: 80, color: Colors.black26),
           SizedBox(height: 16),
           Text(
             'Nenhum consumo registrado neste mês.',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black54,
-            ),
+            style: TextStyle(fontSize: 20, color: Colors.black54),
           ),
         ],
       ),

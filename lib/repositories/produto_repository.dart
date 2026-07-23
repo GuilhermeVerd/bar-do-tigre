@@ -1,9 +1,8 @@
 import '../core/database/app_database.dart';
 
 class ProdutoRepository {
-  ProdutoRepository({
-    AppDatabase? database,
-  }) : _database = database ?? appDatabase;
+  ProdutoRepository({AppDatabase? database})
+    : _database = database ?? appDatabase;
 
   final AppDatabase _database;
 
@@ -53,13 +52,7 @@ class ProdutoRepository {
     );
   }
 
-  Future<int> alterarSituacaoProduto({
-    required int id,
-    required bool ativo,
-  }) {
-    return _database.alterarSituacaoProduto(
-      id: id,
-      ativo: ativo,
-    );
+  Future<int> alterarSituacaoProduto({required int id, required bool ativo}) {
+    return _database.alterarSituacaoProduto(id: id, ativo: ativo);
   }
 }

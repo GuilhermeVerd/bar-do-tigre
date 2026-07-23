@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../inventario/inventario_screen.dart';
 import '../../core/database/app_database.dart';
 import '../../repositories/estoque_repository.dart';
 import '../../repositories/retirada_repository.dart';
@@ -8,6 +8,7 @@ import '../estoque/estoque_screen.dart';
 import '../produtos/produtos_screen.dart';
 import '../relatorios/relatorios_screen.dart';
 import '../usuarios/usuarios_screen.dart';
+import '../configuracoes/configuracoes_screen.dart';
 
 class AdministradorScreen extends StatefulWidget {
   const AdministradorScreen({super.key});
@@ -242,6 +243,21 @@ class _AdministradorScreenState extends State<AdministradorScreen> {
                                         },
                                       ),
                                       AdminCard(
+                                        titulo: 'Inventário',
+                                        subtitulo:
+                                            'Conferência física do estoque',
+                                        icone: Icons.fact_check_outlined,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const InventarioScreen(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      AdminCard(
                                         titulo: 'Relatórios',
                                         subtitulo: 'Consumos, PDF e Excel',
                                         icone: Icons.bar_chart,
@@ -274,9 +290,12 @@ class _AdministradorScreenState extends State<AdministradorScreen> {
                                         subtitulo: 'PIN, backup e preferências',
                                         icone: Icons.settings,
                                         onTap: () {
-                                          mostrarEmDesenvolvimento(
+                                          Navigator.push(
                                             context,
-                                            'Configurações',
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ConfiguracoesScreen(),
+                                            ),
                                           );
                                         },
                                       ),

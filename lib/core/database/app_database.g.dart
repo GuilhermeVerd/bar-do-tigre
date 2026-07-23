@@ -2805,6 +2805,914 @@ class FechamentosMensaisCompanion extends UpdateCompanion<FechamentosMensai> {
   }
 }
 
+class $InventariosTable extends Inventarios
+    with TableInfo<$InventariosTable, Inventario> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InventariosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dataHoraMeta = const VerificationMeta(
+    'dataHora',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dataHora = GeneratedColumn<DateTime>(
+    'data_hora',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _responsavelMeta = const VerificationMeta(
+    'responsavel',
+  );
+  @override
+  late final GeneratedColumn<String> responsavel = GeneratedColumn<String>(
+    'responsavel',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantidadeProdutosMeta =
+      const VerificationMeta('quantidadeProdutos');
+  @override
+  late final GeneratedColumn<int> quantidadeProdutos = GeneratedColumn<int>(
+    'quantidade_produtos',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantidadeDiferencasMeta =
+      const VerificationMeta('quantidadeDiferencas');
+  @override
+  late final GeneratedColumn<int> quantidadeDiferencas = GeneratedColumn<int>(
+    'quantidade_diferencas',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _observacaoMeta = const VerificationMeta(
+    'observacao',
+  );
+  @override
+  late final GeneratedColumn<String> observacao = GeneratedColumn<String>(
+    'observacao',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    dataHora,
+    responsavel,
+    quantidadeProdutos,
+    quantidadeDiferencas,
+    observacao,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inventarios';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Inventario> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('data_hora')) {
+      context.handle(
+        _dataHoraMeta,
+        dataHora.isAcceptableOrUnknown(data['data_hora']!, _dataHoraMeta),
+      );
+    }
+    if (data.containsKey('responsavel')) {
+      context.handle(
+        _responsavelMeta,
+        responsavel.isAcceptableOrUnknown(
+          data['responsavel']!,
+          _responsavelMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_responsavelMeta);
+    }
+    if (data.containsKey('quantidade_produtos')) {
+      context.handle(
+        _quantidadeProdutosMeta,
+        quantidadeProdutos.isAcceptableOrUnknown(
+          data['quantidade_produtos']!,
+          _quantidadeProdutosMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_quantidadeProdutosMeta);
+    }
+    if (data.containsKey('quantidade_diferencas')) {
+      context.handle(
+        _quantidadeDiferencasMeta,
+        quantidadeDiferencas.isAcceptableOrUnknown(
+          data['quantidade_diferencas']!,
+          _quantidadeDiferencasMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_quantidadeDiferencasMeta);
+    }
+    if (data.containsKey('observacao')) {
+      context.handle(
+        _observacaoMeta,
+        observacao.isAcceptableOrUnknown(data['observacao']!, _observacaoMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Inventario map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Inventario(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      dataHora: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}data_hora'],
+      )!,
+      responsavel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}responsavel'],
+      )!,
+      quantidadeProdutos: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantidade_produtos'],
+      )!,
+      quantidadeDiferencas: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantidade_diferencas'],
+      )!,
+      observacao: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}observacao'],
+      ),
+    );
+  }
+
+  @override
+  $InventariosTable createAlias(String alias) {
+    return $InventariosTable(attachedDatabase, alias);
+  }
+}
+
+class Inventario extends DataClass implements Insertable<Inventario> {
+  final int id;
+  final DateTime dataHora;
+  final String responsavel;
+  final int quantidadeProdutos;
+  final int quantidadeDiferencas;
+  final String? observacao;
+  const Inventario({
+    required this.id,
+    required this.dataHora,
+    required this.responsavel,
+    required this.quantidadeProdutos,
+    required this.quantidadeDiferencas,
+    this.observacao,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['data_hora'] = Variable<DateTime>(dataHora);
+    map['responsavel'] = Variable<String>(responsavel);
+    map['quantidade_produtos'] = Variable<int>(quantidadeProdutos);
+    map['quantidade_diferencas'] = Variable<int>(quantidadeDiferencas);
+    if (!nullToAbsent || observacao != null) {
+      map['observacao'] = Variable<String>(observacao);
+    }
+    return map;
+  }
+
+  InventariosCompanion toCompanion(bool nullToAbsent) {
+    return InventariosCompanion(
+      id: Value(id),
+      dataHora: Value(dataHora),
+      responsavel: Value(responsavel),
+      quantidadeProdutos: Value(quantidadeProdutos),
+      quantidadeDiferencas: Value(quantidadeDiferencas),
+      observacao: observacao == null && nullToAbsent
+          ? const Value.absent()
+          : Value(observacao),
+    );
+  }
+
+  factory Inventario.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Inventario(
+      id: serializer.fromJson<int>(json['id']),
+      dataHora: serializer.fromJson<DateTime>(json['dataHora']),
+      responsavel: serializer.fromJson<String>(json['responsavel']),
+      quantidadeProdutos: serializer.fromJson<int>(json['quantidadeProdutos']),
+      quantidadeDiferencas: serializer.fromJson<int>(
+        json['quantidadeDiferencas'],
+      ),
+      observacao: serializer.fromJson<String?>(json['observacao']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'dataHora': serializer.toJson<DateTime>(dataHora),
+      'responsavel': serializer.toJson<String>(responsavel),
+      'quantidadeProdutos': serializer.toJson<int>(quantidadeProdutos),
+      'quantidadeDiferencas': serializer.toJson<int>(quantidadeDiferencas),
+      'observacao': serializer.toJson<String?>(observacao),
+    };
+  }
+
+  Inventario copyWith({
+    int? id,
+    DateTime? dataHora,
+    String? responsavel,
+    int? quantidadeProdutos,
+    int? quantidadeDiferencas,
+    Value<String?> observacao = const Value.absent(),
+  }) => Inventario(
+    id: id ?? this.id,
+    dataHora: dataHora ?? this.dataHora,
+    responsavel: responsavel ?? this.responsavel,
+    quantidadeProdutos: quantidadeProdutos ?? this.quantidadeProdutos,
+    quantidadeDiferencas: quantidadeDiferencas ?? this.quantidadeDiferencas,
+    observacao: observacao.present ? observacao.value : this.observacao,
+  );
+  Inventario copyWithCompanion(InventariosCompanion data) {
+    return Inventario(
+      id: data.id.present ? data.id.value : this.id,
+      dataHora: data.dataHora.present ? data.dataHora.value : this.dataHora,
+      responsavel: data.responsavel.present
+          ? data.responsavel.value
+          : this.responsavel,
+      quantidadeProdutos: data.quantidadeProdutos.present
+          ? data.quantidadeProdutos.value
+          : this.quantidadeProdutos,
+      quantidadeDiferencas: data.quantidadeDiferencas.present
+          ? data.quantidadeDiferencas.value
+          : this.quantidadeDiferencas,
+      observacao: data.observacao.present
+          ? data.observacao.value
+          : this.observacao,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Inventario(')
+          ..write('id: $id, ')
+          ..write('dataHora: $dataHora, ')
+          ..write('responsavel: $responsavel, ')
+          ..write('quantidadeProdutos: $quantidadeProdutos, ')
+          ..write('quantidadeDiferencas: $quantidadeDiferencas, ')
+          ..write('observacao: $observacao')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    dataHora,
+    responsavel,
+    quantidadeProdutos,
+    quantidadeDiferencas,
+    observacao,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Inventario &&
+          other.id == this.id &&
+          other.dataHora == this.dataHora &&
+          other.responsavel == this.responsavel &&
+          other.quantidadeProdutos == this.quantidadeProdutos &&
+          other.quantidadeDiferencas == this.quantidadeDiferencas &&
+          other.observacao == this.observacao);
+}
+
+class InventariosCompanion extends UpdateCompanion<Inventario> {
+  final Value<int> id;
+  final Value<DateTime> dataHora;
+  final Value<String> responsavel;
+  final Value<int> quantidadeProdutos;
+  final Value<int> quantidadeDiferencas;
+  final Value<String?> observacao;
+  const InventariosCompanion({
+    this.id = const Value.absent(),
+    this.dataHora = const Value.absent(),
+    this.responsavel = const Value.absent(),
+    this.quantidadeProdutos = const Value.absent(),
+    this.quantidadeDiferencas = const Value.absent(),
+    this.observacao = const Value.absent(),
+  });
+  InventariosCompanion.insert({
+    this.id = const Value.absent(),
+    this.dataHora = const Value.absent(),
+    required String responsavel,
+    required int quantidadeProdutos,
+    required int quantidadeDiferencas,
+    this.observacao = const Value.absent(),
+  }) : responsavel = Value(responsavel),
+       quantidadeProdutos = Value(quantidadeProdutos),
+       quantidadeDiferencas = Value(quantidadeDiferencas);
+  static Insertable<Inventario> custom({
+    Expression<int>? id,
+    Expression<DateTime>? dataHora,
+    Expression<String>? responsavel,
+    Expression<int>? quantidadeProdutos,
+    Expression<int>? quantidadeDiferencas,
+    Expression<String>? observacao,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dataHora != null) 'data_hora': dataHora,
+      if (responsavel != null) 'responsavel': responsavel,
+      if (quantidadeProdutos != null) 'quantidade_produtos': quantidadeProdutos,
+      if (quantidadeDiferencas != null)
+        'quantidade_diferencas': quantidadeDiferencas,
+      if (observacao != null) 'observacao': observacao,
+    });
+  }
+
+  InventariosCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? dataHora,
+    Value<String>? responsavel,
+    Value<int>? quantidadeProdutos,
+    Value<int>? quantidadeDiferencas,
+    Value<String?>? observacao,
+  }) {
+    return InventariosCompanion(
+      id: id ?? this.id,
+      dataHora: dataHora ?? this.dataHora,
+      responsavel: responsavel ?? this.responsavel,
+      quantidadeProdutos: quantidadeProdutos ?? this.quantidadeProdutos,
+      quantidadeDiferencas: quantidadeDiferencas ?? this.quantidadeDiferencas,
+      observacao: observacao ?? this.observacao,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (dataHora.present) {
+      map['data_hora'] = Variable<DateTime>(dataHora.value);
+    }
+    if (responsavel.present) {
+      map['responsavel'] = Variable<String>(responsavel.value);
+    }
+    if (quantidadeProdutos.present) {
+      map['quantidade_produtos'] = Variable<int>(quantidadeProdutos.value);
+    }
+    if (quantidadeDiferencas.present) {
+      map['quantidade_diferencas'] = Variable<int>(quantidadeDiferencas.value);
+    }
+    if (observacao.present) {
+      map['observacao'] = Variable<String>(observacao.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventariosCompanion(')
+          ..write('id: $id, ')
+          ..write('dataHora: $dataHora, ')
+          ..write('responsavel: $responsavel, ')
+          ..write('quantidadeProdutos: $quantidadeProdutos, ')
+          ..write('quantidadeDiferencas: $quantidadeDiferencas, ')
+          ..write('observacao: $observacao')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ItensInventarioTable extends ItensInventario
+    with TableInfo<$ItensInventarioTable, ItensInventarioData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ItensInventarioTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _inventarioIdMeta = const VerificationMeta(
+    'inventarioId',
+  );
+  @override
+  late final GeneratedColumn<int> inventarioId = GeneratedColumn<int>(
+    'inventario_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES inventarios (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _produtoIdMeta = const VerificationMeta(
+    'produtoId',
+  );
+  @override
+  late final GeneratedColumn<int> produtoId = GeneratedColumn<int>(
+    'produto_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES produtos (id)',
+    ),
+  );
+  static const VerificationMeta _nomeProdutoMeta = const VerificationMeta(
+    'nomeProduto',
+  );
+  @override
+  late final GeneratedColumn<String> nomeProduto = GeneratedColumn<String>(
+    'nome_produto',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _estoqueSistemaMeta = const VerificationMeta(
+    'estoqueSistema',
+  );
+  @override
+  late final GeneratedColumn<int> estoqueSistema = GeneratedColumn<int>(
+    'estoque_sistema',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _estoqueContadoMeta = const VerificationMeta(
+    'estoqueContado',
+  );
+  @override
+  late final GeneratedColumn<int> estoqueContado = GeneratedColumn<int>(
+    'estoque_contado',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _diferencaMeta = const VerificationMeta(
+    'diferenca',
+  );
+  @override
+  late final GeneratedColumn<int> diferenca = GeneratedColumn<int>(
+    'diferenca',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    inventarioId,
+    produtoId,
+    nomeProduto,
+    estoqueSistema,
+    estoqueContado,
+    diferenca,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'itens_inventario';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ItensInventarioData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('inventario_id')) {
+      context.handle(
+        _inventarioIdMeta,
+        inventarioId.isAcceptableOrUnknown(
+          data['inventario_id']!,
+          _inventarioIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_inventarioIdMeta);
+    }
+    if (data.containsKey('produto_id')) {
+      context.handle(
+        _produtoIdMeta,
+        produtoId.isAcceptableOrUnknown(data['produto_id']!, _produtoIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_produtoIdMeta);
+    }
+    if (data.containsKey('nome_produto')) {
+      context.handle(
+        _nomeProdutoMeta,
+        nomeProduto.isAcceptableOrUnknown(
+          data['nome_produto']!,
+          _nomeProdutoMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_nomeProdutoMeta);
+    }
+    if (data.containsKey('estoque_sistema')) {
+      context.handle(
+        _estoqueSistemaMeta,
+        estoqueSistema.isAcceptableOrUnknown(
+          data['estoque_sistema']!,
+          _estoqueSistemaMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_estoqueSistemaMeta);
+    }
+    if (data.containsKey('estoque_contado')) {
+      context.handle(
+        _estoqueContadoMeta,
+        estoqueContado.isAcceptableOrUnknown(
+          data['estoque_contado']!,
+          _estoqueContadoMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_estoqueContadoMeta);
+    }
+    if (data.containsKey('diferenca')) {
+      context.handle(
+        _diferencaMeta,
+        diferenca.isAcceptableOrUnknown(data['diferenca']!, _diferencaMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_diferencaMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ItensInventarioData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ItensInventarioData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      inventarioId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}inventario_id'],
+      )!,
+      produtoId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}produto_id'],
+      )!,
+      nomeProduto: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nome_produto'],
+      )!,
+      estoqueSistema: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}estoque_sistema'],
+      )!,
+      estoqueContado: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}estoque_contado'],
+      )!,
+      diferenca: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}diferenca'],
+      )!,
+    );
+  }
+
+  @override
+  $ItensInventarioTable createAlias(String alias) {
+    return $ItensInventarioTable(attachedDatabase, alias);
+  }
+}
+
+class ItensInventarioData extends DataClass
+    implements Insertable<ItensInventarioData> {
+  final int id;
+  final int inventarioId;
+  final int produtoId;
+  final String nomeProduto;
+  final int estoqueSistema;
+  final int estoqueContado;
+  final int diferenca;
+  const ItensInventarioData({
+    required this.id,
+    required this.inventarioId,
+    required this.produtoId,
+    required this.nomeProduto,
+    required this.estoqueSistema,
+    required this.estoqueContado,
+    required this.diferenca,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['inventario_id'] = Variable<int>(inventarioId);
+    map['produto_id'] = Variable<int>(produtoId);
+    map['nome_produto'] = Variable<String>(nomeProduto);
+    map['estoque_sistema'] = Variable<int>(estoqueSistema);
+    map['estoque_contado'] = Variable<int>(estoqueContado);
+    map['diferenca'] = Variable<int>(diferenca);
+    return map;
+  }
+
+  ItensInventarioCompanion toCompanion(bool nullToAbsent) {
+    return ItensInventarioCompanion(
+      id: Value(id),
+      inventarioId: Value(inventarioId),
+      produtoId: Value(produtoId),
+      nomeProduto: Value(nomeProduto),
+      estoqueSistema: Value(estoqueSistema),
+      estoqueContado: Value(estoqueContado),
+      diferenca: Value(diferenca),
+    );
+  }
+
+  factory ItensInventarioData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ItensInventarioData(
+      id: serializer.fromJson<int>(json['id']),
+      inventarioId: serializer.fromJson<int>(json['inventarioId']),
+      produtoId: serializer.fromJson<int>(json['produtoId']),
+      nomeProduto: serializer.fromJson<String>(json['nomeProduto']),
+      estoqueSistema: serializer.fromJson<int>(json['estoqueSistema']),
+      estoqueContado: serializer.fromJson<int>(json['estoqueContado']),
+      diferenca: serializer.fromJson<int>(json['diferenca']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'inventarioId': serializer.toJson<int>(inventarioId),
+      'produtoId': serializer.toJson<int>(produtoId),
+      'nomeProduto': serializer.toJson<String>(nomeProduto),
+      'estoqueSistema': serializer.toJson<int>(estoqueSistema),
+      'estoqueContado': serializer.toJson<int>(estoqueContado),
+      'diferenca': serializer.toJson<int>(diferenca),
+    };
+  }
+
+  ItensInventarioData copyWith({
+    int? id,
+    int? inventarioId,
+    int? produtoId,
+    String? nomeProduto,
+    int? estoqueSistema,
+    int? estoqueContado,
+    int? diferenca,
+  }) => ItensInventarioData(
+    id: id ?? this.id,
+    inventarioId: inventarioId ?? this.inventarioId,
+    produtoId: produtoId ?? this.produtoId,
+    nomeProduto: nomeProduto ?? this.nomeProduto,
+    estoqueSistema: estoqueSistema ?? this.estoqueSistema,
+    estoqueContado: estoqueContado ?? this.estoqueContado,
+    diferenca: diferenca ?? this.diferenca,
+  );
+  ItensInventarioData copyWithCompanion(ItensInventarioCompanion data) {
+    return ItensInventarioData(
+      id: data.id.present ? data.id.value : this.id,
+      inventarioId: data.inventarioId.present
+          ? data.inventarioId.value
+          : this.inventarioId,
+      produtoId: data.produtoId.present ? data.produtoId.value : this.produtoId,
+      nomeProduto: data.nomeProduto.present
+          ? data.nomeProduto.value
+          : this.nomeProduto,
+      estoqueSistema: data.estoqueSistema.present
+          ? data.estoqueSistema.value
+          : this.estoqueSistema,
+      estoqueContado: data.estoqueContado.present
+          ? data.estoqueContado.value
+          : this.estoqueContado,
+      diferenca: data.diferenca.present ? data.diferenca.value : this.diferenca,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ItensInventarioData(')
+          ..write('id: $id, ')
+          ..write('inventarioId: $inventarioId, ')
+          ..write('produtoId: $produtoId, ')
+          ..write('nomeProduto: $nomeProduto, ')
+          ..write('estoqueSistema: $estoqueSistema, ')
+          ..write('estoqueContado: $estoqueContado, ')
+          ..write('diferenca: $diferenca')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    inventarioId,
+    produtoId,
+    nomeProduto,
+    estoqueSistema,
+    estoqueContado,
+    diferenca,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ItensInventarioData &&
+          other.id == this.id &&
+          other.inventarioId == this.inventarioId &&
+          other.produtoId == this.produtoId &&
+          other.nomeProduto == this.nomeProduto &&
+          other.estoqueSistema == this.estoqueSistema &&
+          other.estoqueContado == this.estoqueContado &&
+          other.diferenca == this.diferenca);
+}
+
+class ItensInventarioCompanion extends UpdateCompanion<ItensInventarioData> {
+  final Value<int> id;
+  final Value<int> inventarioId;
+  final Value<int> produtoId;
+  final Value<String> nomeProduto;
+  final Value<int> estoqueSistema;
+  final Value<int> estoqueContado;
+  final Value<int> diferenca;
+  const ItensInventarioCompanion({
+    this.id = const Value.absent(),
+    this.inventarioId = const Value.absent(),
+    this.produtoId = const Value.absent(),
+    this.nomeProduto = const Value.absent(),
+    this.estoqueSistema = const Value.absent(),
+    this.estoqueContado = const Value.absent(),
+    this.diferenca = const Value.absent(),
+  });
+  ItensInventarioCompanion.insert({
+    this.id = const Value.absent(),
+    required int inventarioId,
+    required int produtoId,
+    required String nomeProduto,
+    required int estoqueSistema,
+    required int estoqueContado,
+    required int diferenca,
+  }) : inventarioId = Value(inventarioId),
+       produtoId = Value(produtoId),
+       nomeProduto = Value(nomeProduto),
+       estoqueSistema = Value(estoqueSistema),
+       estoqueContado = Value(estoqueContado),
+       diferenca = Value(diferenca);
+  static Insertable<ItensInventarioData> custom({
+    Expression<int>? id,
+    Expression<int>? inventarioId,
+    Expression<int>? produtoId,
+    Expression<String>? nomeProduto,
+    Expression<int>? estoqueSistema,
+    Expression<int>? estoqueContado,
+    Expression<int>? diferenca,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (inventarioId != null) 'inventario_id': inventarioId,
+      if (produtoId != null) 'produto_id': produtoId,
+      if (nomeProduto != null) 'nome_produto': nomeProduto,
+      if (estoqueSistema != null) 'estoque_sistema': estoqueSistema,
+      if (estoqueContado != null) 'estoque_contado': estoqueContado,
+      if (diferenca != null) 'diferenca': diferenca,
+    });
+  }
+
+  ItensInventarioCompanion copyWith({
+    Value<int>? id,
+    Value<int>? inventarioId,
+    Value<int>? produtoId,
+    Value<String>? nomeProduto,
+    Value<int>? estoqueSistema,
+    Value<int>? estoqueContado,
+    Value<int>? diferenca,
+  }) {
+    return ItensInventarioCompanion(
+      id: id ?? this.id,
+      inventarioId: inventarioId ?? this.inventarioId,
+      produtoId: produtoId ?? this.produtoId,
+      nomeProduto: nomeProduto ?? this.nomeProduto,
+      estoqueSistema: estoqueSistema ?? this.estoqueSistema,
+      estoqueContado: estoqueContado ?? this.estoqueContado,
+      diferenca: diferenca ?? this.diferenca,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (inventarioId.present) {
+      map['inventario_id'] = Variable<int>(inventarioId.value);
+    }
+    if (produtoId.present) {
+      map['produto_id'] = Variable<int>(produtoId.value);
+    }
+    if (nomeProduto.present) {
+      map['nome_produto'] = Variable<String>(nomeProduto.value);
+    }
+    if (estoqueSistema.present) {
+      map['estoque_sistema'] = Variable<int>(estoqueSistema.value);
+    }
+    if (estoqueContado.present) {
+      map['estoque_contado'] = Variable<int>(estoqueContado.value);
+    }
+    if (diferenca.present) {
+      map['diferenca'] = Variable<int>(diferenca.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ItensInventarioCompanion(')
+          ..write('id: $id, ')
+          ..write('inventarioId: $inventarioId, ')
+          ..write('produtoId: $produtoId, ')
+          ..write('nomeProduto: $nomeProduto, ')
+          ..write('estoqueSistema: $estoqueSistema, ')
+          ..write('estoqueContado: $estoqueContado, ')
+          ..write('diferenca: $diferenca')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2816,6 +3724,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MovimentacoesEstoqueTable(this);
   late final $FechamentosMensaisTable fechamentosMensais =
       $FechamentosMensaisTable(this);
+  late final $InventariosTable inventarios = $InventariosTable(this);
+  late final $ItensInventarioTable itensInventario = $ItensInventarioTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2827,6 +3739,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     itensRetirada,
     movimentacoesEstoque,
     fechamentosMensais,
+    inventarios,
+    itensInventario,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2843,6 +3757,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('movimentacoes_estoque', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'inventarios',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('itens_inventario', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -3360,6 +4281,26 @@ final class $$ProdutosTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$ItensInventarioTable, List<ItensInventarioData>>
+  _itensInventarioRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.itensInventario,
+    aliasName: 'produtos__id__itens_inventario__produto_id',
+  );
+
+  $$ItensInventarioTableProcessedTableManager get itensInventarioRefs {
+    final manager = $$ItensInventarioTableTableManager(
+      $_db,
+      $_db.itensInventario,
+    ).filter((f) => f.produtoId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _itensInventarioRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$ProdutosTableFilterComposer
@@ -3457,6 +4398,31 @@ class $$ProdutosTableFilterComposer
           }) => $$MovimentacoesEstoqueTableFilterComposer(
             $db: $db,
             $table: $db.movimentacoesEstoque,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> itensInventarioRefs(
+    Expression<bool> Function($$ItensInventarioTableFilterComposer f) f,
+  ) {
+    final $$ItensInventarioTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.itensInventario,
+      getReferencedColumn: (t) => t.produtoId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ItensInventarioTableFilterComposer(
+            $db: $db,
+            $table: $db.itensInventario,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3614,6 +4580,31 @@ class $$ProdutosTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> itensInventarioRefs<T extends Object>(
+    Expression<T> Function($$ItensInventarioTableAnnotationComposer a) f,
+  ) {
+    final $$ItensInventarioTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.itensInventario,
+      getReferencedColumn: (t) => t.produtoId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ItensInventarioTableAnnotationComposer(
+            $db: $db,
+            $table: $db.itensInventario,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ProdutosTableTableManager
@@ -3632,6 +4623,7 @@ class $$ProdutosTableTableManager
           PrefetchHooks Function({
             bool itensRetiradaRefs,
             bool movimentacoesEstoqueRefs,
+            bool itensInventarioRefs,
           })
         > {
   $$ProdutosTableTableManager(_$AppDatabase db, $ProdutosTable table)
@@ -3698,12 +4690,17 @@ class $$ProdutosTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({itensRetiradaRefs = false, movimentacoesEstoqueRefs = false}) {
+              ({
+                itensRetiradaRefs = false,
+                movimentacoesEstoqueRefs = false,
+                itensInventarioRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (itensRetiradaRefs) db.itensRetirada,
                     if (movimentacoesEstoqueRefs) db.movimentacoesEstoque,
+                    if (itensInventarioRefs) db.itensInventario,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -3750,6 +4747,27 @@ class $$ProdutosTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (itensInventarioRefs)
+                        await $_getPrefetchedData<
+                          Produto,
+                          $ProdutosTable,
+                          ItensInventarioData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProdutosTableReferences
+                              ._itensInventarioRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ProdutosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).itensInventarioRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.produtoId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -3773,6 +4791,7 @@ typedef $$ProdutosTableProcessedTableManager =
       PrefetchHooks Function({
         bool itensRetiradaRefs,
         bool movimentacoesEstoqueRefs,
+        bool itensInventarioRefs,
       })
     >;
 typedef $$RetiradasTableCreateCompanionBuilder =
@@ -5545,6 +6564,791 @@ typedef $$FechamentosMensaisTableProcessedTableManager =
       FechamentosMensai,
       PrefetchHooks Function()
     >;
+typedef $$InventariosTableCreateCompanionBuilder =
+    InventariosCompanion Function({
+      Value<int> id,
+      Value<DateTime> dataHora,
+      required String responsavel,
+      required int quantidadeProdutos,
+      required int quantidadeDiferencas,
+      Value<String?> observacao,
+    });
+typedef $$InventariosTableUpdateCompanionBuilder =
+    InventariosCompanion Function({
+      Value<int> id,
+      Value<DateTime> dataHora,
+      Value<String> responsavel,
+      Value<int> quantidadeProdutos,
+      Value<int> quantidadeDiferencas,
+      Value<String?> observacao,
+    });
+
+final class $$InventariosTableReferences
+    extends BaseReferences<_$AppDatabase, $InventariosTable, Inventario> {
+  $$InventariosTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$ItensInventarioTable, List<ItensInventarioData>>
+  _itensInventarioRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.itensInventario,
+    aliasName: 'inventarios__id__itens_inventario__inventario_id',
+  );
+
+  $$ItensInventarioTableProcessedTableManager get itensInventarioRefs {
+    final manager = $$ItensInventarioTableTableManager(
+      $_db,
+      $_db.itensInventario,
+    ).filter((f) => f.inventarioId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _itensInventarioRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$InventariosTableFilterComposer
+    extends Composer<_$AppDatabase, $InventariosTable> {
+  $$InventariosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dataHora => $composableBuilder(
+    column: $table.dataHora,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get responsavel => $composableBuilder(
+    column: $table.responsavel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get quantidadeProdutos => $composableBuilder(
+    column: $table.quantidadeProdutos,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get quantidadeDiferencas => $composableBuilder(
+    column: $table.quantidadeDiferencas,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get observacao => $composableBuilder(
+    column: $table.observacao,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> itensInventarioRefs(
+    Expression<bool> Function($$ItensInventarioTableFilterComposer f) f,
+  ) {
+    final $$ItensInventarioTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.itensInventario,
+      getReferencedColumn: (t) => t.inventarioId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ItensInventarioTableFilterComposer(
+            $db: $db,
+            $table: $db.itensInventario,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$InventariosTableOrderingComposer
+    extends Composer<_$AppDatabase, $InventariosTable> {
+  $$InventariosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dataHora => $composableBuilder(
+    column: $table.dataHora,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get responsavel => $composableBuilder(
+    column: $table.responsavel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get quantidadeProdutos => $composableBuilder(
+    column: $table.quantidadeProdutos,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get quantidadeDiferencas => $composableBuilder(
+    column: $table.quantidadeDiferencas,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get observacao => $composableBuilder(
+    column: $table.observacao,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InventariosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InventariosTable> {
+  $$InventariosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dataHora =>
+      $composableBuilder(column: $table.dataHora, builder: (column) => column);
+
+  GeneratedColumn<String> get responsavel => $composableBuilder(
+    column: $table.responsavel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get quantidadeProdutos => $composableBuilder(
+    column: $table.quantidadeProdutos,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get quantidadeDiferencas => $composableBuilder(
+    column: $table.quantidadeDiferencas,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get observacao => $composableBuilder(
+    column: $table.observacao,
+    builder: (column) => column,
+  );
+
+  Expression<T> itensInventarioRefs<T extends Object>(
+    Expression<T> Function($$ItensInventarioTableAnnotationComposer a) f,
+  ) {
+    final $$ItensInventarioTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.itensInventario,
+      getReferencedColumn: (t) => t.inventarioId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ItensInventarioTableAnnotationComposer(
+            $db: $db,
+            $table: $db.itensInventario,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$InventariosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InventariosTable,
+          Inventario,
+          $$InventariosTableFilterComposer,
+          $$InventariosTableOrderingComposer,
+          $$InventariosTableAnnotationComposer,
+          $$InventariosTableCreateCompanionBuilder,
+          $$InventariosTableUpdateCompanionBuilder,
+          (Inventario, $$InventariosTableReferences),
+          Inventario,
+          PrefetchHooks Function({bool itensInventarioRefs})
+        > {
+  $$InventariosTableTableManager(_$AppDatabase db, $InventariosTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InventariosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InventariosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InventariosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> dataHora = const Value.absent(),
+                Value<String> responsavel = const Value.absent(),
+                Value<int> quantidadeProdutos = const Value.absent(),
+                Value<int> quantidadeDiferencas = const Value.absent(),
+                Value<String?> observacao = const Value.absent(),
+              }) => InventariosCompanion(
+                id: id,
+                dataHora: dataHora,
+                responsavel: responsavel,
+                quantidadeProdutos: quantidadeProdutos,
+                quantidadeDiferencas: quantidadeDiferencas,
+                observacao: observacao,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> dataHora = const Value.absent(),
+                required String responsavel,
+                required int quantidadeProdutos,
+                required int quantidadeDiferencas,
+                Value<String?> observacao = const Value.absent(),
+              }) => InventariosCompanion.insert(
+                id: id,
+                dataHora: dataHora,
+                responsavel: responsavel,
+                quantidadeProdutos: quantidadeProdutos,
+                quantidadeDiferencas: quantidadeDiferencas,
+                observacao: observacao,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$InventariosTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({itensInventarioRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (itensInventarioRefs) db.itensInventario,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (itensInventarioRefs)
+                    await $_getPrefetchedData<
+                      Inventario,
+                      $InventariosTable,
+                      ItensInventarioData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$InventariosTableReferences
+                          ._itensInventarioRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$InventariosTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).itensInventarioRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.inventarioId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$InventariosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InventariosTable,
+      Inventario,
+      $$InventariosTableFilterComposer,
+      $$InventariosTableOrderingComposer,
+      $$InventariosTableAnnotationComposer,
+      $$InventariosTableCreateCompanionBuilder,
+      $$InventariosTableUpdateCompanionBuilder,
+      (Inventario, $$InventariosTableReferences),
+      Inventario,
+      PrefetchHooks Function({bool itensInventarioRefs})
+    >;
+typedef $$ItensInventarioTableCreateCompanionBuilder =
+    ItensInventarioCompanion Function({
+      Value<int> id,
+      required int inventarioId,
+      required int produtoId,
+      required String nomeProduto,
+      required int estoqueSistema,
+      required int estoqueContado,
+      required int diferenca,
+    });
+typedef $$ItensInventarioTableUpdateCompanionBuilder =
+    ItensInventarioCompanion Function({
+      Value<int> id,
+      Value<int> inventarioId,
+      Value<int> produtoId,
+      Value<String> nomeProduto,
+      Value<int> estoqueSistema,
+      Value<int> estoqueContado,
+      Value<int> diferenca,
+    });
+
+final class $$ItensInventarioTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ItensInventarioTable,
+          ItensInventarioData
+        > {
+  $$ItensInventarioTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $InventariosTable _inventarioIdTable(_$AppDatabase db) => db
+      .inventarios
+      .createAlias('itens_inventario__inventario_id__inventarios__id');
+
+  $$InventariosTableProcessedTableManager get inventarioId {
+    final $_column = $_itemColumn<int>('inventario_id')!;
+
+    final manager = $$InventariosTableTableManager(
+      $_db,
+      $_db.inventarios,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_inventarioIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $ProdutosTable _produtoIdTable(_$AppDatabase db) =>
+      db.produtos.createAlias('itens_inventario__produto_id__produtos__id');
+
+  $$ProdutosTableProcessedTableManager get produtoId {
+    final $_column = $_itemColumn<int>('produto_id')!;
+
+    final manager = $$ProdutosTableTableManager(
+      $_db,
+      $_db.produtos,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_produtoIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ItensInventarioTableFilterComposer
+    extends Composer<_$AppDatabase, $ItensInventarioTable> {
+  $$ItensInventarioTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nomeProduto => $composableBuilder(
+    column: $table.nomeProduto,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get estoqueSistema => $composableBuilder(
+    column: $table.estoqueSistema,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get estoqueContado => $composableBuilder(
+    column: $table.estoqueContado,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get diferenca => $composableBuilder(
+    column: $table.diferenca,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$InventariosTableFilterComposer get inventarioId {
+    final $$InventariosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.inventarioId,
+      referencedTable: $db.inventarios,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InventariosTableFilterComposer(
+            $db: $db,
+            $table: $db.inventarios,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ProdutosTableFilterComposer get produtoId {
+    final $$ProdutosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.produtoId,
+      referencedTable: $db.produtos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProdutosTableFilterComposer(
+            $db: $db,
+            $table: $db.produtos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ItensInventarioTableOrderingComposer
+    extends Composer<_$AppDatabase, $ItensInventarioTable> {
+  $$ItensInventarioTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nomeProduto => $composableBuilder(
+    column: $table.nomeProduto,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get estoqueSistema => $composableBuilder(
+    column: $table.estoqueSistema,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get estoqueContado => $composableBuilder(
+    column: $table.estoqueContado,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get diferenca => $composableBuilder(
+    column: $table.diferenca,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$InventariosTableOrderingComposer get inventarioId {
+    final $$InventariosTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.inventarioId,
+      referencedTable: $db.inventarios,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InventariosTableOrderingComposer(
+            $db: $db,
+            $table: $db.inventarios,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ProdutosTableOrderingComposer get produtoId {
+    final $$ProdutosTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.produtoId,
+      referencedTable: $db.produtos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProdutosTableOrderingComposer(
+            $db: $db,
+            $table: $db.produtos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ItensInventarioTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ItensInventarioTable> {
+  $$ItensInventarioTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nomeProduto => $composableBuilder(
+    column: $table.nomeProduto,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get estoqueSistema => $composableBuilder(
+    column: $table.estoqueSistema,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get estoqueContado => $composableBuilder(
+    column: $table.estoqueContado,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get diferenca =>
+      $composableBuilder(column: $table.diferenca, builder: (column) => column);
+
+  $$InventariosTableAnnotationComposer get inventarioId {
+    final $$InventariosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.inventarioId,
+      referencedTable: $db.inventarios,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InventariosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.inventarios,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ProdutosTableAnnotationComposer get produtoId {
+    final $$ProdutosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.produtoId,
+      referencedTable: $db.produtos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProdutosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.produtos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ItensInventarioTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ItensInventarioTable,
+          ItensInventarioData,
+          $$ItensInventarioTableFilterComposer,
+          $$ItensInventarioTableOrderingComposer,
+          $$ItensInventarioTableAnnotationComposer,
+          $$ItensInventarioTableCreateCompanionBuilder,
+          $$ItensInventarioTableUpdateCompanionBuilder,
+          (ItensInventarioData, $$ItensInventarioTableReferences),
+          ItensInventarioData,
+          PrefetchHooks Function({bool inventarioId, bool produtoId})
+        > {
+  $$ItensInventarioTableTableManager(
+    _$AppDatabase db,
+    $ItensInventarioTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ItensInventarioTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ItensInventarioTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ItensInventarioTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> inventarioId = const Value.absent(),
+                Value<int> produtoId = const Value.absent(),
+                Value<String> nomeProduto = const Value.absent(),
+                Value<int> estoqueSistema = const Value.absent(),
+                Value<int> estoqueContado = const Value.absent(),
+                Value<int> diferenca = const Value.absent(),
+              }) => ItensInventarioCompanion(
+                id: id,
+                inventarioId: inventarioId,
+                produtoId: produtoId,
+                nomeProduto: nomeProduto,
+                estoqueSistema: estoqueSistema,
+                estoqueContado: estoqueContado,
+                diferenca: diferenca,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int inventarioId,
+                required int produtoId,
+                required String nomeProduto,
+                required int estoqueSistema,
+                required int estoqueContado,
+                required int diferenca,
+              }) => ItensInventarioCompanion.insert(
+                id: id,
+                inventarioId: inventarioId,
+                produtoId: produtoId,
+                nomeProduto: nomeProduto,
+                estoqueSistema: estoqueSistema,
+                estoqueContado: estoqueContado,
+                diferenca: diferenca,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ItensInventarioTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({inventarioId = false, produtoId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (inventarioId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.inventarioId,
+                                referencedTable:
+                                    $$ItensInventarioTableReferences
+                                        ._inventarioIdTable(db),
+                                referencedColumn:
+                                    $$ItensInventarioTableReferences
+                                        ._inventarioIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (produtoId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.produtoId,
+                                referencedTable:
+                                    $$ItensInventarioTableReferences
+                                        ._produtoIdTable(db),
+                                referencedColumn:
+                                    $$ItensInventarioTableReferences
+                                        ._produtoIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ItensInventarioTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ItensInventarioTable,
+      ItensInventarioData,
+      $$ItensInventarioTableFilterComposer,
+      $$ItensInventarioTableOrderingComposer,
+      $$ItensInventarioTableAnnotationComposer,
+      $$ItensInventarioTableCreateCompanionBuilder,
+      $$ItensInventarioTableUpdateCompanionBuilder,
+      (ItensInventarioData, $$ItensInventarioTableReferences),
+      ItensInventarioData,
+      PrefetchHooks Function({bool inventarioId, bool produtoId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5561,4 +7365,8 @@ class $AppDatabaseManager {
       $$MovimentacoesEstoqueTableTableManager(_db, _db.movimentacoesEstoque);
   $$FechamentosMensaisTableTableManager get fechamentosMensais =>
       $$FechamentosMensaisTableTableManager(_db, _db.fechamentosMensais);
+  $$InventariosTableTableManager get inventarios =>
+      $$InventariosTableTableManager(_db, _db.inventarios);
+  $$ItensInventarioTableTableManager get itensInventario =>
+      $$ItensInventarioTableTableManager(_db, _db.itensInventario);
 }

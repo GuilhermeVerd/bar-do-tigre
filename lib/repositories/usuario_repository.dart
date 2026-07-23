@@ -1,9 +1,8 @@
 import '../core/database/app_database.dart';
 
 class UsuarioRepository {
-  UsuarioRepository({
-    AppDatabase? database,
-  }) : _database = database ?? appDatabase;
+  UsuarioRepository({AppDatabase? database})
+    : _database = database ?? appDatabase;
 
   final AppDatabase _database;
 
@@ -47,13 +46,7 @@ class UsuarioRepository {
     );
   }
 
-  Future<int> alterarSituacaoUsuario({
-    required int id,
-    required bool ativo,
-  }) {
-    return _database.alterarSituacaoUsuario(
-      id: id,
-      ativo: ativo,
-    );
+  Future<int> alterarSituacaoUsuario({required int id, required bool ativo}) {
+    return _database.alterarSituacaoUsuario(id: id, ativo: ativo);
   }
 }

@@ -54,24 +54,21 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'O que você deseja fazer?',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black54,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.black54),
                   ),
                   const SizedBox(height: 28),
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        final quantidadeColunas =
-                            constraints.maxWidth < 600 ? 1 : 2;
+                        final quantidadeColunas = constraints.maxWidth < 600
+                            ? 1
+                            : 2;
 
                         return GridView.count(
                           crossAxisCount: quantidadeColunas,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          childAspectRatio:
-                              quantidadeColunas == 1 ? 2.4 : 1.5,
+                          childAspectRatio: quantidadeColunas == 1 ? 2.4 : 1.5,
                           children: [
                             MenuCard(
                               titulo: 'Registrar consumo',
@@ -137,9 +134,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Future<void> abrirAcessoAdministrador(
-    BuildContext context,
-  ) async {
+  Future<void> abrirAcessoAdministrador(BuildContext context) async {
     String pinDigitado = '';
 
     final autorizado = await showDialog<bool>(
@@ -163,10 +158,7 @@ class HomeScreen extends StatelessWidget {
                 pinDigitado = valor;
               },
               onSubmitted: (valor) {
-                Navigator.pop(
-                  dialogContext,
-                  valor == '1234',
-                );
+                Navigator.pop(dialogContext, valor == '1234');
               },
             ),
           ),
@@ -179,10 +171,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(
-                  dialogContext,
-                  pinDigitado == '1234',
-                );
+                Navigator.pop(dialogContext, pinDigitado == '1234');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFFC107),
@@ -202,15 +191,11 @@ class HomeScreen extends StatelessWidget {
     if (autorizado == true) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => const AdministradorScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const AdministradorScreen()),
       );
     } else if (autorizado == false) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN administrativo incorreto.'),
-        ),
+        const SnackBar(content: Text('PIN administrativo incorreto.')),
       );
     }
   }
@@ -240,11 +225,7 @@ class MenuCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icone,
-                size: 52,
-                color: const Color(0xFF0B1F3A),
-              ),
+              Icon(icone, size: 52, color: const Color(0xFF0B1F3A)),
               const SizedBox(height: 12),
               Text(
                 titulo,

@@ -48,11 +48,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
 
     if (quantidadeAtual >= produto.estoqueAtual) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Estoque insuficiente para ${produto.nome}.',
-          ),
-        ),
+        SnackBar(content: Text('Estoque insuficiente para ${produto.nome}.')),
       );
 
       return;
@@ -113,28 +109,22 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
           ? 'Outros'
           : produto.categoria.trim();
 
-      produtosPorCategoria.putIfAbsent(
-        categoria,
-        () => [],
-      );
+      produtosPorCategoria.putIfAbsent(categoria, () => []);
 
       produtosPorCategoria[categoria]!.add(produto);
     }
 
     for (final listaProdutos in produtosPorCategoria.values) {
       listaProdutos.sort(
-        (produtoA, produtoB) => produtoA.nome.toLowerCase().compareTo(
-              produtoB.nome.toLowerCase(),
-            ),
+        (produtoA, produtoB) =>
+            produtoA.nome.toLowerCase().compareTo(produtoB.nome.toLowerCase()),
       );
     }
 
     final categoriasOrdenadas = produtosPorCategoria.keys.toList()
       ..sort(
         (categoriaA, categoriaB) =>
-            categoriaA.toLowerCase().compareTo(
-                  categoriaB.toLowerCase(),
-                ),
+            categoriaA.toLowerCase().compareTo(categoriaB.toLowerCase()),
       );
 
     return {
@@ -149,26 +139,18 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
     }
 
     final produtosSelecionados = produtos
-        .where(
-          (produto) => quantidadeDoProduto(produto.id) > 0,
-        )
+        .where((produto) => quantidadeDoProduto(produto.id) > 0)
         .toList();
 
     if (produtosSelecionados.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Selecione pelo menos um produto.',
-          ),
-        ),
+        const SnackBar(content: Text('Selecione pelo menos um produto.')),
       );
 
       return;
     }
 
-    final totalCentavos = calcularTotalCentavos(
-      produtosSelecionados,
-    );
+    final totalCentavos = calcularTotalCentavos(produtosSelecionados);
 
     final confirmou = await showDialog<bool>(
       context: context,
@@ -189,31 +171,21 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  ...produtosSelecionados.map(
-                    (produto) {
-                      final quantidade = quantidadeDoProduto(
-                        produto.id,
-                      );
+                  ...produtosSelecionados.map((produto) {
+                    final quantidade = quantidadeDoProduto(produto.id);
 
-                      final subtotalCentavos =
-                          produto.precoCentavos * quantidade;
+                    final subtotalCentavos = produto.precoCentavos * quantidade;
 
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(produto.nome),
-                        subtitle: Text(
-                          '$quantidade unidade(s)',
-                        ),
-                        trailing: Text(
-                          'R\$ ${formatarPreco(subtotalCentavos)}',
-                        ),
-                      );
-                    },
-                  ),
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(produto.nome),
+                      subtitle: Text('$quantidade unidade(s)'),
+                      trailing: Text('R\$ ${formatarPreco(subtotalCentavos)}'),
+                    );
+                  }),
                   const Divider(),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
                         'Total',
@@ -239,19 +211,13 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(
-                  dialogContext,
-                  false,
-                );
+                Navigator.pop(dialogContext, false);
               },
               child: const Text('CANCELAR'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(
-                  dialogContext,
-                  true,
-                );
+                Navigator.pop(dialogContext, true);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFFC107),
@@ -268,14 +234,12 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
       return;
     }
 
-    final itens = produtosSelecionados.map(
-      (produto) {
-        return ItemConsumo(
-          produtoId: produto.id,
-          quantidade: quantidadeDoProduto(produto.id),
-        );
-      },
-    ).toList();
+    final itens = produtosSelecionados.map((produto) {
+      return ItemConsumo(
+        produtoId: produto.id,
+        quantidade: quantidadeDoProduto(produto.id),
+      );
+    }).toList();
 
     setState(() {
       registrando = true;
@@ -309,11 +273,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Não foi possível registrar o consumo: $erro',
-          ),
-        ),
+        SnackBar(content: Text('Não foi possível registrar o consumo: $erro')),
       );
     } finally {
       if (mounted) {
@@ -340,17 +300,11 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
               backgroundColor: const Color(0xFFE8EDF4),
               backgroundImage:
                   produto.fotoPath != null && produto.fotoPath!.isNotEmpty
-                      ? MemoryImage(
-                          base64Decode(
-                            produto.fotoPath!,
-                          ),
-                        )
-                      : null,
+                  ? MemoryImage(base64Decode(produto.fotoPath!))
+                  : null,
               child: produto.fotoPath == null || produto.fotoPath!.isEmpty
                   ? Icon(
-                      iconeDaCategoria(
-                        produto.categoria,
-                      ),
+                      iconeDaCategoria(produto.categoria),
                       size: 40,
                       color: const Color(0xFF0B1F3A),
                     )
@@ -362,25 +316,17 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
               'R\$ ${formatarPreco(produto.precoCentavos)}',
-              style: const TextStyle(
-                fontSize: 17,
-                color: Colors.black54,
-              ),
+              style: const TextStyle(fontSize: 17, color: Colors.black54),
             ),
             const SizedBox(height: 4),
             Text(
               'Estoque: ${produto.estoqueAtual}',
-              style: const TextStyle(
-                color: Colors.black54,
-              ),
+              style: const TextStyle(color: Colors.black54),
             ),
             const SizedBox(height: 12),
             Row(
@@ -392,9 +338,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                           diminuirQuantidade(produto);
                         }
                       : null,
-                  icon: const Icon(
-                    Icons.remove_circle,
-                  ),
+                  icon: const Icon(Icons.remove_circle),
                   color: const Color(0xFF0B1F3A),
                   disabledColor: Colors.black26,
                   iconSize: 34,
@@ -416,9 +360,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                           aumentarQuantidade(produto);
                         }
                       : null,
-                  icon: const Icon(
-                    Icons.add_circle,
-                  ),
+                  icon: const Icon(Icons.add_circle),
                   color: const Color(0xFFFFC107),
                   disabledColor: Colors.black26,
                   iconSize: 34,
@@ -435,12 +377,9 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
     required String categoria,
     required List<Produto> produtos,
   }) {
-    final quantidadeSelecionada = produtos.fold<int>(
-      0,
-      (total, produto) {
-        return total + quantidadeDoProduto(produto.id);
-      },
-    );
+    final quantidadeSelecionada = produtos.fold<int>(0, (total, produto) {
+      return total + quantidadeDoProduto(produto.id);
+    });
 
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
@@ -471,9 +410,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
           ),
         ),
         subtitle: Text(
-          produtos.length == 1
-              ? '1 produto'
-              : '${produtos.length} produtos',
+          produtos.length == 1 ? '1 produto' : '${produtos.length} produtos',
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -506,12 +443,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              16,
-              0,
-              16,
-              16,
-            ),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final colunas = constraints.maxWidth < 600 ? 1 : 2;
@@ -520,17 +452,14 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: produtos.length,
-                  gridDelegate:
-                      SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: colunas,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                     childAspectRatio: colunas == 1 ? 2 : 1.25,
                   ),
                   itemBuilder: (context, index) {
-                    return construirCardProduto(
-                      produtos[index],
-                    );
+                    return construirCardProduto(produtos[index]);
                   },
                 );
               },
@@ -553,9 +482,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 900,
-            ),
+            constraints: const BoxConstraints(maxWidth: 900),
             child: StreamBuilder<List<Produto>>(
               stream: produtoRepository.observarProdutosAtivos(),
               builder: (context, snapshot) {
@@ -573,26 +500,20 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                 }
 
                 if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final produtos = snapshot.data!
-                    .where(
-                      (produto) => produto.estoqueAtual > 0,
-                    )
+                    .where((produto) => produto.estoqueAtual > 0)
                     .toList();
 
-                final produtosPorCategoria =
-                    agruparProdutosPorCategoria(produtos);
-
-                final totalCentavos = calcularTotalCentavos(
+                final produtosPorCategoria = agruparProdutosPorCategoria(
                   produtos,
                 );
 
-                final quantidadeTotalSelecionada =
-                    quantidades.values.fold<int>(
+                final totalCentavos = calcularTotalCentavos(produtos);
+
+                final quantidadeTotalSelecionada = quantidades.values.fold<int>(
                   0,
                   (total, quantidade) => total + quantidade,
                 );
@@ -604,19 +525,14 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
-                        margin: const EdgeInsets.only(
-                          bottom: 16,
-                        ),
+                        margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFFE8EDF4),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Row(
                           children: [
-                            const Icon(
-                              Icons.person,
-                              color: Color(0xFF0B1F3A),
-                            ),
+                            const Icon(Icons.person, color: Color(0xFF0B1F3A)),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
@@ -637,8 +553,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFFC107),
-                                  borderRadius:
-                                      BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
                                   '$quantidadeTotalSelecionada item(ns)',
@@ -662,21 +577,17 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                                 ),
                               )
                             : ListView.builder(
-                                itemCount:
-                                    produtosPorCategoria.length,
+                                itemCount: produtosPorCategoria.length,
                                 itemBuilder: (context, index) {
-                                  final categoria =
-                                      produtosPorCategoria.keys
-                                          .elementAt(index);
+                                  final categoria = produtosPorCategoria.keys
+                                      .elementAt(index);
 
                                   final produtosDaCategoria =
-                                      produtosPorCategoria[
-                                          categoria]!;
+                                      produtosPorCategoria[categoria]!;
 
                                   return construirCategoria(
                                     categoria: categoria,
-                                    produtos:
-                                        produtosDaCategoria,
+                                    produtos: produtosDaCategoria,
                                   );
                                 },
                               ),
@@ -688,10 +599,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 8,
-                            ),
+                            BoxShadow(color: Colors.black12, blurRadius: 8),
                           ],
                         ),
                         child: Row(
@@ -721,7 +629,8 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                         width: double.infinity,
                         height: 58,
                         child: ElevatedButton(
-                          onPressed: produtos.isEmpty ||
+                          onPressed:
+                              produtos.isEmpty ||
                                   quantidades.isEmpty ||
                                   registrando
                               ? null
@@ -729,16 +638,14 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                                   registrarConsumo(produtos);
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color(0xFFFFC107),
+                            backgroundColor: const Color(0xFFFFC107),
                             foregroundColor: Colors.black,
                           ),
                           child: registrando
                               ? const SizedBox(
                                   width: 26,
                                   height: 26,
-                                  child:
-                                      CircularProgressIndicator(
+                                  child: CircularProgressIndicator(
                                     strokeWidth: 3,
                                   ),
                                 )
