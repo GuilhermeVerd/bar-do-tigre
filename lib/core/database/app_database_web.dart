@@ -1,16 +1,19 @@
 import 'package:drift/drift.dart';
 import 'package:drift/wasm.dart';
-import 'package:sqlite3/wasm.dart';
 
 QueryExecutor connectAppDatabase() {
-  return LazyDatabase(() async {
-    final sqlite3 = await WasmSqlite3.loadFromUrl(Uri.parse('sqlite3.wasm'));
-    final fileSystem = await IndexedDbFileSystem.open(dbName: 'bar_do_tigre');
-    sqlite3.registerVirtualFileSystem(fileSystem, makeDefault: true);
-    return WasmDatabase(
-      sqlite3: sqlite3,
-      path: '/bar_do_tigre.sqlite',
-      fileSystem: fileSystem,
+  return DatabaseConnection.delayed(Future(() async {
+    final result = await WasmDatabase.open(
+      databaseName: 'bar_do_tigre',
+      sqlite3Uri: Uri.parse('sqlite3.wasm'),
+      driftWorkerUri: Uri.parse('drift_worker.dart.js'),
     );
-  });
+
+    if (result.missingFeatures.isNotEmpty) {
+      // ignore: avoid_print
+      print('Using ${result.chosenImplementation} due to missing features: ${result.missingFeatures}');
+    }
+
+    return result.resolvedExecutor;
+  }));
 }
