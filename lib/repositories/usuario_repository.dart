@@ -49,4 +49,14 @@ class UsuarioRepository {
   Future<int> alterarSituacaoUsuario({required int id, required bool ativo}) {
     return _database.alterarSituacaoUsuario(id: id, ativo: ativo);
   }
+
+  Future<ResumoUsuarioRelatorio> calcularResumoMensal({
+    required int usuarioId,
+    required String mesReferencia,
+  }) {
+    return _database.calcularResumoMensal(
+      usuarioId: usuarioId,
+      mesReferencia: mesReferencia,
+    );
+  }
 }

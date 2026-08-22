@@ -154,7 +154,7 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
               return ListView.separated(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
                 itemCount: usuarios.length,
-                separatorBuilder: (_, _) {
+                separatorBuilder: (_, __) {
                   return const SizedBox(height: 12);
                 },
                 itemBuilder: (context, index) {
@@ -330,7 +330,7 @@ class _FormularioUsuarioDialogState extends State<_FormularioUsuarioDialog> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  initialValue: tipo,
+                  value: tipo,
                   decoration: const InputDecoration(
                     labelText: 'Tipo',
                     prefixIcon: Icon(Icons.badge),

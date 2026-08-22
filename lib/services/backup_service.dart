@@ -25,11 +25,23 @@ class BackupService {
         .select(database.fechamentosMensais)
         .get();
 
+    final pagamentos = await database
+        .select(database.pagamentosMensais)
+        .get();
+
+    final inventarios = await database
+        .select(database.inventarios)
+        .get();
+
+    final itensInventario = await database
+        .select(database.itensInventario)
+        .get();
+
     final agora = DateTime.now();
 
     final backup = <String, dynamic>{
       'aplicativo': 'Bar do Tigre',
-      'versaoBackup': 1,
+      'versaoBackup': 2,
       'geradoEm': agora.toIso8601String(),
       'dados': {
         'usuarios': usuarios.map((item) => item.toJson()).toList(),
@@ -40,6 +52,9 @@ class BackupService {
             .map((item) => item.toJson())
             .toList(),
         'fechamentosMensais': fechamentos.map((item) => item.toJson()).toList(),
+        'pagamentosMensais': pagamentos.map((item) => item.toJson()).toList(),
+        'inventarios': inventarios.map((item) => item.toJson()).toList(),
+        'itensInventario': itensInventario.map((item) => item.toJson()).toList(),
       },
     };
 
@@ -57,20 +72,19 @@ class BackupService {
     await FileSaver.instance.saveFile(
       name: 'backup_bar_do_tigre_$dataArquivo',
       bytes: bytes,
-      fileExtension: 'json',
-      mimeType: MimeType.json,
+      ext: 'json',
+      mimeType: MimeType.other,
     );
   }
 
   Future<bool> restaurarBackup() async {
-    final resultado = await FilePicker.pickFiles(
+    final resultado = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['json'],
       allowMultiple: false,
       withData: true,
     );
 
-    // O usuário fechou a seleção sem escolher um arquivo.
     if (resultado == null || resultado.files.isEmpty) {
       return false;
     }
@@ -116,10 +130,6 @@ class BackupService {
 
     final dados = Map<String, dynamic>.from(dadosBrutos);
 
-    /*
-     * Toda a conversão é realizada antes de alterar o banco.
-     * Assim, um arquivo inválido não apaga os dados atuais.
-     */
     final usuariosBackup = _converterLista(
       dados: dados,
       chave: 'usuarios',
@@ -156,12 +166,45 @@ class BackupService {
       conversor: FechamentosMensai.fromJson,
     );
 
+    final versao = backup['versaoBackup'] as int? ?? 1;
+
+    final List<PagamentosMensai> pagamentosBackup;
+    final List<Inventario> inventariosBackup;
+    final List<ItensInventarioData> itensInventarioBackup;
+
+    if (versao >= 2) {
+      pagamentosBackup = _converterLista(
+        dados: dados,
+        chave: 'pagamentosMensais',
+        conversor: PagamentosMensai.fromJson,
+      );
+
+      inventariosBackup = _converterLista(
+        dados: dados,
+        chave: 'inventarios',
+        conversor: Inventario.fromJson,
+      );
+
+      itensInventarioBackup = _converterLista(
+        dados: dados,
+        chave: 'itensInventario',
+        conversor: ItensInventarioData.fromJson,
+      );
+    } else {
+      pagamentosBackup = [];
+      inventariosBackup = [];
+      itensInventarioBackup = [];
+    }
+
     _validarRelacionamentos(
       usuarios: usuariosBackup,
       produtos: produtosBackup,
       retiradas: retiradasBackup,
       itensRetirada: itensRetiradaBackup,
       movimentacoes: movimentacoesBackup,
+      pagamentos: pagamentosBackup,
+      inventarios: inventariosBackup,
+      itensInventario: itensInventarioBackup,
     );
 
     await database.restaurarDadosBackup(
@@ -171,6 +214,9 @@ class BackupService {
       itensRetiradaBackup: itensRetiradaBackup,
       movimentacoesBackup: movimentacoesBackup,
       fechamentosBackup: fechamentosBackup,
+      pagamentosBackup: pagamentosBackup,
+      inventariosBackup: inventariosBackup,
+      itensInventarioBackup: itensInventarioBackup,
     );
 
     return true;
@@ -189,7 +235,7 @@ class BackupService {
       throw const FormatException('A versão do arquivo de backup é inválida.');
     }
 
-    if (versaoBackup != 1) {
+    if (versaoBackup < 1 || versaoBackup > 2) {
       throw FormatException(
         'A versão $versaoBackup do backup não é compatível '
         'com esta versão do aplicativo.',
@@ -235,10 +281,14 @@ class BackupService {
     required List<Retirada> retiradas,
     required List<ItensRetiradaData> itensRetirada,
     required List<MovimentacoesEstoqueData> movimentacoes,
+    required List<PagamentosMensai> pagamentos,
+    required List<Inventario> inventarios,
+    required List<ItensInventarioData> itensInventario,
   }) {
     final idsUsuarios = usuarios.map((item) => item.id).toSet();
     final idsProdutos = produtos.map((item) => item.id).toSet();
     final idsRetiradas = retiradas.map((item) => item.id).toSet();
+    final idsInventarios = inventarios.map((item) => item.id).toSet();
 
     for (final retirada in retiradas) {
       if (!idsUsuarios.contains(retirada.usuarioId)) {
@@ -268,6 +318,28 @@ class BackupService {
         throw FormatException(
           'Uma movimentação de estoque está vinculada '
           'a um produto inexistente.',
+        );
+      }
+    }
+
+    for (final pagamento in pagamentos) {
+      if (!idsUsuarios.contains(pagamento.usuarioId)) {
+        throw FormatException(
+          'Um pagamento está vinculado a um usuário inexistente.',
+        );
+      }
+    }
+
+    for (final item in itensInventario) {
+      if (!idsInventarios.contains(item.inventarioId)) {
+        throw FormatException(
+          'Um item de inventário está vinculado a um inventário inexistente.',
+        );
+      }
+
+      if (!idsProdutos.contains(item.produtoId)) {
+        throw FormatException(
+          'Um item de inventário está vinculado a um produto inexistente.',
         );
       }
     }

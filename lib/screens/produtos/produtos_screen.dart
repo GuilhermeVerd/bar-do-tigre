@@ -257,7 +257,7 @@ class _ProdutosScreenState extends State<ProdutosScreen> {
                                 100,
                               ),
                               itemCount: produtosFiltrados.length,
-                              separatorBuilder: (_, _) {
+                              separatorBuilder: (_, __) {
                                 return const SizedBox(height: 12);
                               },
                               itemBuilder: (context, index) {
@@ -562,7 +562,7 @@ class _FormularioProdutoDialogState extends State<_FormularioProdutoDialog> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  initialValue: categoria,
+                  value: categoria,
                   decoration: const InputDecoration(
                     labelText: 'Categoria',
                     prefixIcon: Icon(Icons.category),

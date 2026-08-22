@@ -164,7 +164,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                       Expanded(
                         child: ListView.separated(
                           itemCount: produtosParaComprar.length,
-                          separatorBuilder: (_, _) {
+                          separatorBuilder: (_, __) {
                             return const Divider(height: 1);
                           },
                           itemBuilder: (context, index) {
@@ -197,8 +197,8 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                                 vertical: 6,
                               ),
                               leading: CircleAvatar(
-                                backgroundColor: corNivel.withValues(
-                                  alpha: 0.12,
+                                backgroundColor: corNivel.withOpacity(
+                                  0.12,
                                 ),
                                 child: Icon(
                                   Icons.inventory_2_outlined,
@@ -222,7 +222,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: corNivel.withValues(alpha: 0.12),
+                                  color: corNivel.withOpacity( 0.12),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -346,6 +346,8 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
     quantidadeController.dispose();
     observacaoController.dispose();
 
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       await repository.registrarEntrada(
         produtoId: produto.id,
@@ -357,7 +359,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             'Entrada de $quantidade unidade(s) '
@@ -371,11 +373,191 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             'Não foi possível registrar a entrada: '
             '$erro',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> abrirAjusteEstoque(Produto produto) async {
+    final quantidadeController = TextEditingController(
+      text: produto.estoqueAtual.toString(),
+    );
+    final observacaoController = TextEditingController();
+    final chaveFormulario = GlobalKey<FormState>();
+
+    final novoEstoque = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) {
+        String? mensagemErro;
+
+        return StatefulBuilder(
+          builder: (context, atualizarDialog) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  const Icon(Icons.tune_outlined),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text('Ajustar estoque\n${produto.nome}')),
+                ],
+              ),
+              content: SizedBox(
+                width: 420,
+                child: Form(
+                  key: chaveFormulario,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.amber.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.info_outline, color: Colors.amber),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Estoque atual do sistema: ${produto.estoqueAtual} unidade(s).\n'
+                                'Informe a quantidade correta.',
+                                style: TextStyle(
+                                  color: Colors.amber.shade900,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: quantidadeController,
+                        autofocus: true,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Novo estoque',
+                          hintText: 'Quantidade correta',
+                          border: const OutlineInputBorder(),
+                          errorText: mensagemErro,
+                          prefixIcon: const Icon(Icons.inventory_2_outlined),
+                        ),
+                        validator: (valor) {
+                          final numero = int.tryParse(valor?.trim() ?? '');
+                          if (numero == null || numero < 0) {
+                            return 'Informe uma quantidade válida.';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: observacaoController,
+                        maxLength: 150,
+                        maxLines: 2,
+                        decoration: const InputDecoration(
+                          labelText: 'Motivo do ajuste',
+                          hintText: 'Ex.: Correção após contagem física',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.notes_outlined),
+                        ),
+                        validator: (valor) {
+                          if (valor == null || valor.trim().length < 3) {
+                            return 'Informe o motivo do ajuste.';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFC107),
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () {
+                    if (chaveFormulario.currentState?.validate() != true) {
+                      return;
+                    }
+                    final valor = int.tryParse(
+                      quantidadeController.text.trim(),
+                    );
+                    if (valor == null || valor < 0) {
+                      atualizarDialog(() {
+                        mensagemErro = 'Informe uma quantidade válida.';
+                      });
+                      return;
+                    }
+                    Navigator.pop(dialogContext, valor);
+                  },
+                  icon: const Icon(Icons.save),
+                  label: const Text('Confirmar ajuste'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (novoEstoque == null) {
+      quantidadeController.dispose();
+      observacaoController.dispose();
+      return;
+    }
+
+    final observacao = observacaoController.text.trim();
+
+    quantidadeController.dispose();
+    observacaoController.dispose();
+
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await repository.ajustarEstoque(
+        produtoId: produto.id,
+        novoEstoque: novoEstoque,
+        observacao: observacao,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Estoque de ${produto.nome} ajustado para $novoEstoque unidade(s).',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (erro) {
+      if (!mounted) {
+        return;
+      }
+
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Não foi possível ajustar o estoque: $erro',
           ),
           backgroundColor: Colors.red,
         ),
@@ -508,7 +690,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                         itemCount: produtosAtivos.length,
-                        separatorBuilder: (_, _) {
+                        separatorBuilder: (_, __) {
                           return const SizedBox(height: 12);
                         },
                         itemBuilder: (context, index) {
@@ -520,6 +702,9 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                             percentual: percentualEstoque(produto),
                             aoAdicionar: () {
                               abrirEntradaEstoque(produto);
+                            },
+                            aoAjustar: () {
+                              abrirAjusteEstoque(produto);
                             },
                           );
                         },
@@ -627,7 +812,7 @@ class _ResumoEstoqueCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 25,
-              backgroundColor: cor.withValues(alpha: 0.12),
+              backgroundColor: cor.withOpacity( 0.12),
               child: Icon(icone, color: cor),
             ),
             const SizedBox(width: 14),
@@ -661,12 +846,14 @@ class _ProdutoEstoqueCard extends StatelessWidget {
     required this.nivel,
     required this.percentual,
     required this.aoAdicionar,
+    required this.aoAjustar,
   });
 
   final Produto produto;
   final NivelEstoque nivel;
   final double percentual;
   final VoidCallback aoAdicionar;
+  final VoidCallback aoAjustar;
 
   Color get corNivel {
     switch (nivel) {
@@ -741,7 +928,7 @@ class _ProdutoEstoqueCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 27,
-                    backgroundColor: corNivel.withValues(alpha: 0.12),
+                    backgroundColor: corNivel.withOpacity( 0.12),
                     child: Icon(iconeNivel, color: corNivel, size: 29),
                   ),
                   const SizedBox(width: 15),
@@ -774,10 +961,10 @@ class _ProdutoEstoqueCard extends StatelessWidget {
                                 vertical: 5,
                               ),
                               decoration: BoxDecoration(
-                                color: corNivel.withValues(alpha: 0.12),
+                                color: corNivel.withOpacity( 0.12),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: corNivel.withValues(alpha: 0.40),
+                                  color: corNivel.withOpacity( 0.40),
                                 ),
                               ),
                               child: Row(
@@ -810,10 +997,22 @@ class _ProdutoEstoqueCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  FilledButton.icon(
-                    onPressed: aoAdicionar,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Adicionar'),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    alignment: WrapAlignment.end,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: aoAjustar,
+                        icon: const Icon(Icons.tune_outlined),
+                        label: const Text('Ajustar'),
+                      ),
+                      FilledButton.icon(
+                        onPressed: aoAdicionar,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Adicionar'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -855,7 +1054,7 @@ class _ProdutoEstoqueCard extends StatelessWidget {
                   value: percentual,
                   minHeight: 10,
                   color: corNivel,
-                  backgroundColor: corNivel.withValues(alpha: 0.15),
+                  backgroundColor: corNivel.withOpacity( 0.15),
                 ),
               ),
             ],
@@ -884,7 +1083,7 @@ class _InformacaoEstoque extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: destaque ? cor.withValues(alpha: 0.08) : const Color(0xFFF4F6F8),
+        color: destaque ? cor.withOpacity( 0.08) : const Color(0xFFF4F6F8),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(

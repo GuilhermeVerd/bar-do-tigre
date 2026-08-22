@@ -114,7 +114,7 @@ class HistoricoMesesScreen extends StatelessWidget {
                 return ListView.separated(
                   padding: const EdgeInsets.all(20),
                   itemCount: meses.length,
-                  separatorBuilder: (_, _) {
+                  separatorBuilder: (_, __) {
                     return const SizedBox(height: 14);
                   },
                   itemBuilder: (context, index) {

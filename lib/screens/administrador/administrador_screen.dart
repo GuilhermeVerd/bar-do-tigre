@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../inventario/inventario_screen.dart';
+import '../pagamentos/pagamentos_screen.dart';
 import '../../core/database/app_database.dart';
 import '../../repositories/estoque_repository.dart';
 import '../../repositories/retirada_repository.dart';
@@ -273,6 +274,20 @@ class _AdministradorScreenState extends State<AdministradorScreen> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   const RelatoriosScreen(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      AdminCard(
+                                        titulo: 'Pagamentos',
+                                        subtitulo: 'Mensalidades e baixas',
+                                        icone: Icons.payments_outlined,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const PagamentosScreen(),
                                             ),
                                           );
                                         },

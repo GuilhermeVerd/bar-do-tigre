@@ -149,22 +149,141 @@ class _InventarioScreenState extends State<InventarioScreen> {
     await PdfService.gerarInventario(itens: itens);
   }
 
+  Future<_DadosInventario?> pedirDadosInventario() async {
+    final responsavelController = TextEditingController();
+    final observacaoController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final dados = await showDialog<_DadosInventario>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.fact_check_outlined),
+              SizedBox(width: 10),
+              Expanded(child: Text('Dados do inventário')),
+            ],
+          ),
+          content: SizedBox(
+            width: 460,
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: responsavelController,
+                      textCapitalization: TextCapitalization.words,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Responsável pelo inventário',
+                        prefixIcon: Icon(Icons.badge_outlined),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (valor) {
+                        if (valor == null || valor.trim().length < 2) {
+                          return 'Informe o nome do responsável.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: observacaoController,
+                      maxLength: 200,
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Observação (opcional)',
+                        hintText: 'Ex.: Inventário de final de mês',
+                        prefixIcon: Icon(Icons.notes_outlined),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancelar'),
+            ),
+            FilledButton.icon(
+              onPressed: () {
+                if (formKey.currentState?.validate() != true) {
+                  return;
+                }
+                Navigator.pop(
+                  dialogContext,
+                  _DadosInventario(
+                    responsavel: responsavelController.text.trim(),
+                    observacao: observacaoController.text.trim().isEmpty
+                        ? null
+                        : observacaoController.text.trim(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.check),
+              label: const Text('Continuar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    responsavelController.dispose();
+    observacaoController.dispose();
+
+    return dados;
+  }
+
   Future<void> confirmarInventario(List<Produto> produtos) async {
-    final produtosAlterados = produtos.where((produto) {
+    final itensRegistro = <ItemInventarioRegistro>[];
+    var temDiferenca = false;
+
+    for (final produto in produtos) {
       final contagemFisica = obterContagemFisica(produto);
+      if (contagemFisica == null || contagemFisica < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Informe uma contagem válida para ${produto.nome}.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
 
-      return contagemFisica != null &&
-          contagemFisica >= 0 &&
-          contagemFisica != produto.estoqueAtual;
-    }).toList();
+      itensRegistro.add(
+        ItemInventarioRegistro(
+          produtoId: produto.id,
+          estoqueContado: contagemFisica,
+        ),
+      );
 
-    if (produtosAlterados.isEmpty) {
+      if (contagemFisica != produto.estoqueAtual) {
+        temDiferenca = true;
+      }
+    }
+
+    if (!temDiferenca) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Nenhuma diferença foi encontrada no inventário.'),
         ),
       );
+    }
 
+    final dados = await pedirDadosInventario();
+
+    if (dados == null || !mounted) {
       return;
     }
 
@@ -174,9 +293,9 @@ class _InventarioScreenState extends State<InventarioScreen> {
         return AlertDialog(
           title: const Text('Confirmar inventário'),
           content: Text(
-            '${produtosAlterados.length} produto(s) possuem diferença entre '
-            'o estoque do sistema e a contagem física.\n\n'
-            'Deseja corrigir os estoques agora?',
+            'Responsável: ${dados.responsavel}\n\n'
+            '${itensRegistro.length} produto(s) serão registrados.\n\n'
+            'Deseja confirmar o inventário e corrigir os estoques?',
           ),
           actions: [
             TextButton(
@@ -189,15 +308,19 @@ class _InventarioScreenState extends State<InventarioScreen> {
               onPressed: () {
                 Navigator.pop(context, true);
               },
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFFFC107),
+                foregroundColor: Colors.black,
+              ),
               icon: const Icon(Icons.check),
-              label: const Text('Confirmar'),
+              label: const Text('Confirmar inventário'),
             ),
           ],
         );
       },
     );
 
-    if (confirmar != true) {
+    if (confirmar != true || !mounted) {
       return;
     }
 
@@ -205,29 +328,24 @@ class _InventarioScreenState extends State<InventarioScreen> {
       salvando = true;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
-      for (final produto in produtosAlterados) {
-        final contagemFisica = obterContagemFisica(produto);
-
-        if (contagemFisica == null || contagemFisica < 0) {
-          continue;
-        }
-
-        await repository.ajustarEstoque(
-          produtoId: produto.id,
-          novoEstoque: contagemFisica,
-          observacao: 'Correção realizada por inventário físico.',
-        );
-      }
+      await repository.registrarInventario(
+        responsavel: dados.responsavel,
+        itens: itensRegistro,
+        observacao: dados.observacao,
+      );
 
       if (!mounted) {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('Inventário confirmado com sucesso.'),
           backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
         ),
       );
     } catch (erro) {
@@ -241,7 +359,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
           .replaceFirst('StateError: ', '')
           .replaceFirst('Invalid argument(s): ', '');
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(content: Text(mensagem), backgroundColor: Colors.red),
       );
     } finally {
@@ -297,7 +415,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                         itemCount: produtos.length,
-                        separatorBuilder: (_, _) {
+                        separatorBuilder: (_, __) {
                           return const SizedBox(height: 12);
                         },
                         itemBuilder: (context, index) {
@@ -500,7 +618,7 @@ class _ProdutoInventarioCard extends StatelessWidget {
             final indicadorDiferenca = Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: corDiferenca(diferenca).withValues(alpha: 0.10),
+                color: corDiferenca(diferenca).withOpacity( 0.10),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -604,4 +722,11 @@ class _EstadoErro extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DadosInventario {
+  _DadosInventario({required this.responsavel, this.observacao});
+
+  final String responsavel;
+  final String? observacao;
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../services/backup_service.dart';
+import '../../services/preferencias_service.dart';
+import '../pagamentos/pagamentos_screen.dart';
 
 class ConfiguracoesScreen extends StatefulWidget {
   const ConfiguracoesScreen({super.key});
@@ -28,6 +30,8 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
       gerandoBackup = true;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       await backupService.gerarBackup();
 
@@ -35,7 +39,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('Backup gerado com sucesso.'),
           backgroundColor: Colors.green,
@@ -46,7 +50,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
         return;
       }
 
-      _mostrarErro('Não foi possível gerar o backup: ${_limparErro(erro)}');
+      _mostrarErro(messenger, 'Não foi possível gerar o backup: ${_limparErro(erro)}');
     } finally {
       if (mounted) {
         setState(() {
@@ -65,6 +69,8 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
       restaurandoBackup = true;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       final restaurado = await backupService.restaurarBackup();
 
@@ -73,7 +79,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
       }
 
       if (!restaurado) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Nenhum arquivo de backup foi selecionado.'),
           ),
@@ -87,7 +93,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
         return;
       }
 
-      _mostrarErro('Não foi possível restaurar o backup: ${_limparErro(erro)}');
+      _mostrarErro(messenger, 'Não foi possível restaurar o backup: ${_limparErro(erro)}');
     } finally {
       if (mounted) {
         setState(() {
@@ -111,7 +117,8 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
           ),
           content: const Text(
             'Será criado um arquivo contendo usuários, produtos, '
-            'consumos, estoque, movimentações e fechamentos mensais.\n\n'
+            'consumos, estoque, movimentações, fechamentos, pagamentos, '
+            'inventários e seus itens.\n\n'
             'Guarde esse arquivo em um local seguro.',
           ),
           actions: [
@@ -158,8 +165,8 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
             width: 430,
             child: Text(
               'A restauração substituirá todos os usuários, produtos, '
-              'consumos, quantidades de estoque, movimentações e '
-              'fechamentos atualmente salvos.\n\n'
+              'consumos, quantidades de estoque, movimentações, '
+              'fechamentos, pagamentos e inventários atualmente salvos.\n\n'
               'Essa ação não poderá ser desfeita.\n\n'
               'Recomenda-se gerar um backup dos dados atuais antes '
               'de continuar.',
@@ -195,6 +202,216 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
     }
   }
 
+  Future<void> alterarPinAdministrativo() async {
+    final pinAtual = await PreferenciasService.instancia.obterPinAdministrativo();
+
+    if (!mounted) return;
+
+    final controladorPinAntigo = TextEditingController();
+    final controladorPinNovo = TextEditingController();
+    final controladorPinConfirmacao = TextEditingController();
+    var mostrarPins = false;
+    String? erroPinAtual;
+    String? erroPinNovo;
+    String? erroConfirmacao;
+
+    final messenger = ScaffoldMessenger.of(context);
+
+    final confirmou = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            String? validar() {
+              final pinAtualDigitado = controladorPinAntigo.text.trim();
+              final novo = controladorPinNovo.text.trim();
+              final confirmacao = controladorPinConfirmacao.text.trim();
+
+              erroPinAtual = null;
+              erroPinNovo = null;
+              erroConfirmacao = null;
+
+              if (pinAtualDigitado.length != 4) {
+                erroPinAtual = 'Informe os 4 dígitos.';
+              } else if (pinAtualDigitado != pinAtual) {
+                erroPinAtual = 'PIN atual incorreto.';
+              }
+
+              if (novo.length != 4) {
+                erroPinNovo = 'O PIN deve ter 4 dígitos.';
+              }
+
+              if (confirmacao.length != 4) {
+                erroConfirmacao = 'Confirme os 4 dígitos.';
+              } else if (confirmacao != novo) {
+                erroConfirmacao = 'A confirmação não bate com o novo PIN.';
+              }
+
+              if (erroPinAtual != null || erroPinNovo != null || erroConfirmacao != null) {
+                return 'Valores inválidos.';
+              }
+              return null;
+            }
+
+            return AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.lock_reset_outlined),
+                  SizedBox(width: 10),
+                  Expanded(child: Text('Alterar PIN admin')),
+                ],
+              ),
+              content: SizedBox(
+                width: 420,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'PIN atual: $pinAtual',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade700,
+                          backgroundColor: Colors.grey.shade100,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: controladorPinAntigo,
+                        keyboardType: TextInputType.number,
+                        obscureText: !mostrarPins,
+                        maxLength: 4,
+                        decoration: InputDecoration(
+                          labelText: 'PIN atual',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          border: const OutlineInputBorder(),
+                          counterText: '',
+                          errorText: erroPinAtual,
+                        ),
+                        onChanged: (_) {
+                          setStateDialog(() {
+                            erroPinAtual = null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: controladorPinNovo,
+                        keyboardType: TextInputType.number,
+                        obscureText: !mostrarPins,
+                        maxLength: 4,
+                        decoration: InputDecoration(
+                          labelText: 'Novo PIN',
+                          prefixIcon: const Icon(Icons.key_outlined),
+                          border: const OutlineInputBorder(),
+                          counterText: '',
+                          errorText: erroPinNovo,
+                        ),
+                        onChanged: (_) {
+                          setStateDialog(() {
+                            erroPinNovo = null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: controladorPinConfirmacao,
+                        keyboardType: TextInputType.number,
+                        obscureText: !mostrarPins,
+                        maxLength: 4,
+                        decoration: InputDecoration(
+                          labelText: 'Confirmar novo PIN',
+                          prefixIcon: const Icon(Icons.verified_user_outlined),
+                          border: const OutlineInputBorder(),
+                          counterText: '',
+                          errorText: erroConfirmacao,
+                        ),
+                        onChanged: (_) {
+                          setStateDialog(() {
+                            erroConfirmacao = null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: mostrarPins,
+                            onChanged: (valor) {
+                              setStateDialog(() {
+                                mostrarPins = valor ?? false;
+                              });
+                            },
+                          ),
+                          const Expanded(
+                            child: Text(
+                              'Mostrar PINs digitados',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Cancelar'),
+                ),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFC107),
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () {
+                    final mensagem = validar();
+                    if (mensagem != null) {
+                      setStateDialog(() {});
+                      return;
+                    }
+                    Navigator.pop(dialogContext, true);
+                  },
+                  icon: const Icon(Icons.save),
+                  label: const Text('Salvar novo PIN'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    final valorPinNovo = controladorPinNovo.text.trim();
+
+    if (confirmou != true || !mounted) return;
+
+    try {
+      await PreferenciasService.instancia
+          .definirPinAdministrativo(valorPinNovo);
+
+      if (!mounted) return;
+
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('PIN administrativo alterado com sucesso.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (erro) {
+      if (!mounted) return;
+
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Erro ao alterar PIN: ${erro.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<void> _mostrarRestauracaoConcluida() async {
     await showDialog<void>(
       context: context,
@@ -224,8 +441,8 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
     );
   }
 
-  void _mostrarErro(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(
+  void _mostrarErro(ScaffoldMessengerState messenger, String mensagem) {
+    messenger.showSnackBar(
       SnackBar(
         content: Text(mensagem),
         backgroundColor: Colors.red,
@@ -258,6 +475,91 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
             child: ListView(
               padding: const EdgeInsets.all(24),
               children: [
+                const Text(
+                  'Gerenciamento',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0B1F3A),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Gerencie pagamentos e acesse controles importantes do bar.',
+                  style: TextStyle(fontSize: 17, color: Colors.black54),
+                ),
+                const SizedBox(height: 24),
+                Card(
+                  elevation: 2,
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(20),
+                    leading: const CircleAvatar(
+                      radius: 27,
+                      backgroundColor: Color(0xFFFFECB3),
+                      child: Icon(
+                        Icons.payments_outlined,
+                        color: Color(0xFFFF8F00),
+                        size: 30,
+                      ),
+                    ),
+                    title: const Text(
+                      'Pagamentos mensais',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: const Padding(
+                      padding: EdgeInsets.only(top: 7),
+                      child: Text(
+                        'Registre e acompanhe os pagamentos dos usuários.',
+                      ),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PagamentosScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Card(
+                  elevation: 2,
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(20),
+                    leading: const CircleAvatar(
+                      radius: 27,
+                      backgroundColor: Color(0xFFE8F5E9),
+                      child: Icon(
+                        Icons.lock_reset_outlined,
+                        color: Colors.green,
+                        size: 30,
+                      ),
+                    ),
+                    title: const Text(
+                      'Alterar PIN administrativo',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: const Padding(
+                      padding: EdgeInsets.only(top: 7),
+                      child: Text(
+                        'PIN de 4 dígitos para acessar o painel do administrador.',
+                      ),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: alterarPinAdministrativo,
+                  ),
+                ),
+                const SizedBox(height: 32),
                 const Text(
                   'Backup e segurança',
                   style: TextStyle(

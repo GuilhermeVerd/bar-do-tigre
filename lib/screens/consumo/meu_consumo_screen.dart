@@ -165,7 +165,7 @@ class _MeuConsumoScreenState extends State<MeuConsumoScreen> {
                         : ListView.separated(
                             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                             itemCount: retiradas.length,
-                            separatorBuilder: (_, _) {
+                            separatorBuilder: (_, __) {
                               return const SizedBox(height: 14);
                             },
                             itemBuilder: (context, index) {

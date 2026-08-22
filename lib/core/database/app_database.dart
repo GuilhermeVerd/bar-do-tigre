@@ -707,6 +707,39 @@ final class AppDatabase extends _$AppDatabase {
     });
   }
 
+  Future<ResumoUsuarioRelatorio> calcularResumoMensal({
+    required int usuarioId,
+    required String mesReferencia,
+  }) async {
+    final usuario = await (select(usuarios)
+          ..where((t) => t.id.equals(usuarioId)))
+        .getSingleOrNull();
+
+    final nomeUsuario = usuario?.nome ?? 'Usuário';
+
+    final retiradasMes = await (select(retiradas)
+          ..where(
+            (t) =>
+                t.usuarioId.equals(usuarioId) &
+                t.mesReferencia.equals(mesReferencia),
+          ))
+        .get();
+
+    var totalCentavos = 0;
+    final quantidadeRetiradas = retiradasMes.length;
+
+    for (final retirada in retiradasMes) {
+      totalCentavos += retirada.totalCentavos;
+    }
+
+    return ResumoUsuarioRelatorio(
+      usuarioId: usuarioId,
+      nomeUsuario: nomeUsuario,
+      quantidadeRetiradas: quantidadeRetiradas,
+      totalCentavos: totalCentavos,
+    );
+  }
+
   Future<void> registrarEntradaEstoque({
     required int produtoId,
     required int quantidade,
@@ -1026,6 +1059,99 @@ final class AppDatabase extends _$AppDatabase {
     });
   }
 
+  Future<List<PagamentosMensai>> listarPagamentosPorMes({
+    required String mesReferencia,
+  }) {
+    return (select(pagamentosMensais)
+          ..where((t) => t.mesReferencia.equals(mesReferencia))
+          ..orderBy([(t) => OrderingTerm(expression: t.usuarioId)]))
+        .get();
+  }
+
+  Stream<List<PagamentosMensai>> observarPagamentosPorMes({
+    required String mesReferencia,
+  }) {
+    return (select(pagamentosMensais)
+          ..where((t) => t.mesReferencia.equals(mesReferencia))
+          ..orderBy([(t) => OrderingTerm(expression: t.usuarioId)]))
+        .watch();
+  }
+
+  Future<List<PagamentosMensai>> listarPagamentosPorUsuario({
+    required int usuarioId,
+  }) {
+    return (select(pagamentosMensais)
+          ..where((t) => t.usuarioId.equals(usuarioId))
+          ..orderBy([
+            (t) => OrderingTerm(
+              expression: t.mesReferencia,
+              mode: OrderingMode.desc,
+            ),
+          ]))
+        .get();
+  }
+
+  Future<bool> verificarPagamentoExistente({
+    required int usuarioId,
+    required String mesReferencia,
+  }) async {
+    final resultado = await (select(pagamentosMensais)
+          ..where(
+            (t) =>
+                t.usuarioId.equals(usuarioId) &
+                t.mesReferencia.equals(mesReferencia),
+          ))
+        .getSingleOrNull();
+
+    return resultado != null;
+  }
+
+  Future<int> registrarPagamento({
+    required int usuarioId,
+    required String mesReferencia,
+    required int valorCentavos,
+    DateTime? pagoEm,
+  }) {
+    if (valorCentavos <= 0) {
+      throw ArgumentError('O valor do pagamento deve ser maior que zero.');
+    }
+
+    final dataHora = pagoEm ?? DateTime.now();
+
+    return into(pagamentosMensais).insert(
+      PagamentosMensaisCompanion.insert(
+        usuarioId: usuarioId,
+        mesReferencia: mesReferencia,
+        valorCentavos: valorCentavos,
+        pagoEm: Value(dataHora),
+      ),
+    );
+  }
+
+  Future<void> removerPagamento({required int id}) {
+    return (delete(pagamentosMensais)..where((t) => t.id.equals(id))).go();
+  }
+
+  Future<List<Inventario>> listarInventarios() {
+    return (select(inventarios)
+          ..orderBy([
+            (t) => OrderingTerm(
+              expression: t.dataHora,
+              mode: OrderingMode.desc,
+            ),
+          ]))
+        .get();
+  }
+
+  Future<List<ItensInventarioData>> listarItensInventario({
+    required int inventarioId,
+  }) {
+    return (select(itensInventario)
+          ..where((t) => t.inventarioId.equals(inventarioId))
+          ..orderBy([(t) => OrderingTerm(expression: t.nomeProduto)]))
+        .get();
+  }
+
   Future<void> restaurarDadosBackup({
     required List<Usuario> usuariosBackup,
     required List<Produto> produtosBackup,
@@ -1033,9 +1159,15 @@ final class AppDatabase extends _$AppDatabase {
     required List<ItensRetiradaData> itensRetiradaBackup,
     required List<MovimentacoesEstoqueData> movimentacoesBackup,
     required List<FechamentosMensai> fechamentosBackup,
+    required List<PagamentosMensai> pagamentosBackup,
+    required List<Inventario> inventariosBackup,
+    required List<ItensInventarioData> itensInventarioBackup,
   }) {
     return transaction(() async {
       // Apaga primeiro as tabelas dependentes.
+      await delete(itensInventario).go();
+      await delete(inventarios).go();
+      await delete(pagamentosMensais).go();
       await delete(itensRetirada).go();
       await delete(movimentacoesEstoque).go();
       await delete(retiradas).go();
@@ -1069,6 +1201,18 @@ final class AppDatabase extends _$AppDatabase {
 
       for (final fechamento in fechamentosBackup) {
         await into(fechamentosMensais).insert(fechamento);
+      }
+
+      for (final pagamento in pagamentosBackup) {
+        await into(pagamentosMensais).insert(pagamento);
+      }
+
+      for (final inventario in inventariosBackup) {
+        await into(inventarios).insert(inventario);
+      }
+
+      for (final item in itensInventarioBackup) {
+        await into(itensInventario).insert(item);
       }
     });
   }

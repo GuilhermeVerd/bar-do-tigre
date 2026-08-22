@@ -479,7 +479,7 @@ class _ListaRelatorios extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       itemCount: relatorios.length,
-      separatorBuilder: (_, _) {
+      separatorBuilder: (_, __) {
         return const SizedBox(height: 12);
       },
       itemBuilder: (context, index) {

@@ -4,6 +4,7 @@ import '../administrador/administrador_screen.dart';
 import '../consumo/consumo_screen.dart';
 import '../consumo/meu_consumo_screen.dart';
 import '../produtos/produtos_screen.dart';
+import '../../services/preferencias_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
@@ -181,14 +182,14 @@ class HomeScreen extends StatelessWidget {
     var pinDigitado = '';
     var ocultarPin = true;
 
-    final autorizado = await showDialog<bool>(
+    final pinInformado = await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
-            void validarPin() {
-              Navigator.pop(dialogContext, pinDigitado.trim() == '1234');
+            void confirmar() {
+              Navigator.pop(dialogContext, pinDigitado.trim());
             }
 
             return AlertDialog(
@@ -230,7 +231,7 @@ class HomeScreen extends StatelessWidget {
                     border: const OutlineInputBorder(),
                   ),
                   onSubmitted: (_) {
-                    validarPin();
+                    confirmar();
                   },
                 ),
               ),
@@ -242,7 +243,7 @@ class HomeScreen extends StatelessWidget {
                   child: const Text('Cancelar'),
                 ),
                 FilledButton.icon(
-                  onPressed: validarPin,
+                  onPressed: confirmar,
                   style: FilledButton.styleFrom(
                     backgroundColor: amareloDestaque,
                     foregroundColor: Colors.black,
@@ -257,13 +258,22 @@ class HomeScreen extends StatelessWidget {
       },
     );
 
-    
+    if (!context.mounted) {
+      return;
+    }
+
+    if (pinInformado == null || pinInformado.isEmpty) {
+      return;
+    }
+
+    final autorizado = await PreferenciasService.instancia
+        .validarPinAdministrativo(pinInformado);
 
     if (!context.mounted) {
       return;
     }
 
-    if (autorizado == true) {
+    if (autorizado) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const AdministradorScreen()),
@@ -271,14 +281,12 @@ class HomeScreen extends StatelessWidget {
       return;
     }
 
-    if (autorizado == false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN administrativo incorreto.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('PIN administrativo incorreto.'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 }
 
@@ -367,7 +375,7 @@ class _MenuCard extends StatelessWidget {
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
-                  color: corIcone.withValues(alpha: 0.12),
+                  color: corIcone.withOpacity( 0.12),
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Icon(icone, size: 40, color: corIcone),

@@ -41,7 +41,7 @@ class HistoricoEstoqueScreen extends StatelessWidget {
                 return ListView.separated(
                   padding: const EdgeInsets.all(20),
                   itemCount: movimentacoes.length,
-                  separatorBuilder: (_, _) {
+                  separatorBuilder: (_, __) {
                     return const SizedBox(height: 12);
                   },
                   itemBuilder: (context, index) {
@@ -116,7 +116,7 @@ class _MovimentacaoCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 27,
-              backgroundColor: cor.withValues(alpha: 0.12),
+              backgroundColor: cor.withOpacity( 0.12),
               child: Icon(icone, color: cor),
             ),
             const SizedBox(width: 16),

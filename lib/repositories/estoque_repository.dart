@@ -37,4 +37,16 @@ class EstoqueRepository {
       observacao: observacao,
     );
   }
+
+  Future<int> registrarInventario({
+    required String responsavel,
+    required List<ItemInventarioRegistro> itens,
+    String? observacao,
+  }) {
+    return _database.registrarInventario(
+      responsavel: responsavel,
+      itens: itens,
+      observacao: observacao,
+    );
+  }
 }
