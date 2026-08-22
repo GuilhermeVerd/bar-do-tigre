@@ -3,28 +3,10 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart' if (dart.library.io) 'package:drift/native.dart';
 import 'package:drift/web.dart' if (dart.library.js) 'package:drift/web.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:sqlite3/wasm.dart' if (dart.library.js) 'package:sqlite3/wasm.dart';
 
 part 'app_database.g.dart';
 
-final appDatabase = AppDatabase(LazyDatabase(_abrirConexao));
-
-Future<DatabaseConnection> _abrirConexao() async {
-  if (kIsWeb) {
-    final sqlite = await WasmSqlite3.loadFromUrl(Uri.parse('sqlite3.wasm'));
-    final fs = await IndexedDbFileSystem.open(dbName: 'bar_do_tigre_fs');
-    sqlite.registerVirtualFileSystem(fs, makeDefault: true);
-    return DatabaseConnection(
-      WebDatabase.withStorage(
-        DriftWebStorage.indexedDb('bar_do_tigre', sqlite3: sqlite),
-      ),
-    );
-  } else {
-    return DatabaseConnection.fromExecutor(
-      driftDatabase(name: 'bar_do_tigre'),
-    );
-  }
-}
+final appDatabase = AppDatabase();
 
 class ItemConsumo {
   const ItemConsumo({required this.produtoId, required this.quantidade});
