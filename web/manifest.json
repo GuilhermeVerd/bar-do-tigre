@@ -1,11 +1,11 @@
 {
-    "name": "bar_do_tigre",
-    "short_name": "bar_do_tigre",
+    "name": "Bar do Tigre - NPaOc Amazonas",
+    "short_name": "Bar do Tigre",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0B1F3A",
+    "theme_color": "#0B1F3A",
+    "description": "Sistema de Gerenciamento do Bar dos Oficiais do NPaOc Amazonas - P120. Da Guanabara vou à caça!",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

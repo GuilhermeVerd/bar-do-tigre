@@ -301,13 +301,13 @@ class BackupService {
 
     for (final item in itensRetirada) {
       if (!idsRetiradas.contains(item.retiradaId)) {
-        throw FormatException(
+        throw const FormatException(
           'Um item está vinculado a uma retirada inexistente.',
         );
       }
 
       if (!idsProdutos.contains(item.produtoId)) {
-        throw FormatException(
+        throw const FormatException(
           'Um item está vinculado a um produto inexistente.',
         );
       }
@@ -315,7 +315,7 @@ class BackupService {
 
     for (final movimentacao in movimentacoes) {
       if (!idsProdutos.contains(movimentacao.produtoId)) {
-        throw FormatException(
+        throw const FormatException(
           'Uma movimentação de estoque está vinculada '
           'a um produto inexistente.',
         );
@@ -324,7 +324,7 @@ class BackupService {
 
     for (final pagamento in pagamentos) {
       if (!idsUsuarios.contains(pagamento.usuarioId)) {
-        throw FormatException(
+        throw const FormatException(
           'Um pagamento está vinculado a um usuário inexistente.',
         );
       }
@@ -332,13 +332,13 @@ class BackupService {
 
     for (final item in itensInventario) {
       if (!idsInventarios.contains(item.inventarioId)) {
-        throw FormatException(
+        throw const FormatException(
           'Um item de inventário está vinculado a um inventário inexistente.',
         );
       }
 
       if (!idsProdutos.contains(item.produtoId)) {
-        throw FormatException(
+        throw const FormatException(
           'Um item de inventário está vinculado a um produto inexistente.',
         );
       }
