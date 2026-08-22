@@ -14,29 +14,30 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  cupertino_icons: ^1.0.6
-  drift: ^2.15.0
-  drift_flutter: ^0.1.0
-  path_provider: ^2.1.2
-  sqflite: ^2.3.3
-  sqflite_common_ffi_web: ^0.4.3
-  path: ^1.9.0
-  pdf: ^3.10.8
-  printing: ^5.11.1
-  syncfusion_flutter_xlsio: ^24.2.9
-  image_picker: ^1.0.8
-  image: ^4.1.7
-  file_picker: ^8.0.0+1
-  file_saver: ^0.2.13
-  shared_preferences: ^2.2.2
-  intl: ^0.19.0
+  cupertino_icons: 1.0.6
+  drift: 2.15.0
+  drift_flutter: 0.1.0
+  path_provider: 2.1.2
+  sqflite: 2.3.3
+  sqflite_common_ffi_web: 0.4.3
+  path: 1.9.0
+  pdf: 3.10.8
+  printing: 5.11.1
+  syncfusion_flutter_xlsio: 24.2.9
+  image_picker: 1.0.8
+  image: 4.1.7
+  file_picker: 8.0.0+1
+  file_saver: 0.2.13
+  shared_preferences: 2.2.2
+  intl: 0.19.0
+  sqlite3: 2.4.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
-  drift_dev: ^2.15.0
-  build_runner: ^2.4.9
+  flutter_lints: 3.0.0
+  drift_dev: 2.15.0
+  build_runner: 2.4.9
 
 flutter:
   uses-material-design: true

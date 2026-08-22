@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart' if (dart.library.io) 'package:drift/native.dart';
-import 'package:drift/web.dart' if (dart.library.js) 'package:drift/web.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 part 'app_database.g.dart';
