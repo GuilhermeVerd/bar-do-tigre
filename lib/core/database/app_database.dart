@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
+
+import 'app_database_native.dart'
+    if (dart.library.js) 'app_database_web.dart';
 
 part 'app_database.g.dart';
 
@@ -282,16 +284,7 @@ class ItensInventario extends Table {
 )
 final class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-    : super(
-        executor ??
-            driftDatabase(
-              name: 'bar_do_tigre',
-              web: DriftWebOptions(
-                sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-                driftWorker: Uri.parse('drift_worker.dart.js'),
-              ),
-            ),
-      );
+    : super(executor ?? connectAppDatabase());
 
   @override
   int get schemaVersion => 5;
