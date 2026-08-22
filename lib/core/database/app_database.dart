@@ -282,7 +282,16 @@ class ItensInventario extends Table {
 )
 final class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'bar_do_tigre'));
+    : super(
+        executor ??
+            driftDatabase(
+              name: 'bar_do_tigre',
+              web: DriftWebOptions(
+                sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+                driftWorker: Uri.parse('drift_worker.dart.js'),
+              ),
+            ),
+      );
 
   @override
   int get schemaVersion => 5;
